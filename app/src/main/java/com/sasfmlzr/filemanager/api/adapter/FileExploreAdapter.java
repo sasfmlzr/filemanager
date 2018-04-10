@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sasfmlzr.filemanager.R;
@@ -16,12 +17,12 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class FileExploreAdapter extends ArrayAdapter<FileModel> {
-    //public class FileExploreAdapter extends BaseAdapter<> {
     private final LayoutInflater mInflater;
     private final Context mContext;
     private final Resources mResources;
     private int res;
     private List<FileModel> mFileModels;
+
     public FileExploreAdapter(Context context, int resource, List<FileModel> fileModels){
         super(context,resource,fileModels);
         res=resource;
@@ -31,10 +32,10 @@ public class FileExploreAdapter extends ArrayAdapter<FileModel> {
         mInflater = LayoutInflater.from(context);
     }
 
+    @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         final ViewHolder mViewHolder;
-        //final File file = new File(getItem(position));
         if(convertView==null)
         {
             convertView = mInflater.inflate(R.layout.current_item_file, parent,false);
@@ -48,12 +49,15 @@ public class FileExploreAdapter extends ArrayAdapter<FileModel> {
         mViewHolder.dateView.setText(fileModel.getDateFile());
         mViewHolder.bottomView.setText(fileModel.getNameFile());
         mViewHolder.nameView.setText(fileModel.getTypeFile());
+        mViewHolder.imageView.setImageResource(fileModel.getImageIconFile());
         return convertView;
     }
 
     private class ViewHolder {
         final TextView nameView, bottomView,dateView;
+        final ImageView imageView;
         ViewHolder(View view){
+            imageView =     view.findViewById(R.id.icon_file);
             nameView =      view.findViewById(R.id.file_name_view);
             bottomView =    view.findViewById(R.id.bottom_view);
             dateView =      view.findViewById(R.id.date_view);

@@ -3,6 +3,7 @@ package com.sasfmlzr.filemanager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         List<FileModel> mfileModel = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            mfileModel.add(new FileModel("asds","asdas","sadasa"));
+            mfileModel.add(new FileModel("asds","asdas","sadasa", R.drawable.file));
         }
         return mfileModel;
     }
