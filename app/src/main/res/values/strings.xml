@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">fileManager</string>
+    <string name="cantreadfolder">Cannot read folder due to permissions</string>
+
 </resources>
