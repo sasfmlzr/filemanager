@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.stericson.RootTools.RootTools;
 
-public class Settings {
+public final class Settings {
 
     private Settings() {}
 
@@ -17,11 +17,13 @@ public class Settings {
     }
 
     public static boolean showHiddenFiles() {
-        return mPrefs.getBoolean("displayhiddenfiles", true);
+        return true;
+     //   return mPrefs.getBoolean("displayhiddenfiles", true);
     }
 
     public static boolean rootAccess() {
-        return mPrefs.getBoolean("enablerootaccess", false) && RootTools.isAccessGiven();
+        return false;
+        //return mPrefs.getBoolean("enablerootaccess", false) && RootTools.isAccessGiven();
     }
 
 
