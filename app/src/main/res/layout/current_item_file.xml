@@ -28,6 +28,7 @@
                 android:layout_height="@dimen/item_height"
                 android:layout_gravity="left"
                 android:layout_weight="1"
+                android:contentDescription="Icon Files"
                 app:srcCompat="@android:color/background_light" />
 
             <TextView
