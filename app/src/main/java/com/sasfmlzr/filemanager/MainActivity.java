@@ -2,6 +2,7 @@ package com.sasfmlzr.filemanager;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onClick(View view){
+        Intent intent = new Intent(this, SecondActivity.class);
+
     }
 
 }
