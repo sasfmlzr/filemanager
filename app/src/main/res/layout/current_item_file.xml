@@ -31,25 +31,33 @@
                 android:contentDescription="Icon Files"
                 app:srcCompat="@android:color/background_light" />
 
-            <TextView
-                android:id="@+id/file_name_view"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:singleLine="true"
-                android:text="ddd"
-                android:textSize="18sp" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/bottom_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical|center"
-                android:text="TextView"
-                tools:layout_editor_absoluteX="306dp"
-                tools:layout_editor_absoluteY="33dp" />
+                <TextView
+                    android:id="@+id/file_name_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="ddd"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/bottom_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|center"
+                    android:text="TextView"
+                    tools:layout_editor_absoluteX="306dp"
+                    tools:layout_editor_absoluteY="33dp" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/date_view"
