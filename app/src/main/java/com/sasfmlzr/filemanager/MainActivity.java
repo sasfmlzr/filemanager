@@ -4,24 +4,29 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
 import com.sasfmlzr.filemanager.api.model.FileModel;
 import com.sasfmlzr.filemanager.api.other.Settings;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     protected final int READ_EXTERNAL_STORAGE = 0;
-    private final String pathMain = "storage/emulated/0";
+    private final String pathMain = Environment
+            .getExternalStorageDirectory()
+            .getAbsolutePath();
     private ListView mFileList;
     private FileExploreAdapter mFileExploreAdapter;
     @Override
@@ -43,26 +48,31 @@ public class MainActivity extends AppCompatActivity {
         mFileList = findViewById(R.id.mFileList);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            System.out.println("Permission is not granted");
+            Toast.makeText(this, "Permission is not granted", Toast.LENGTH_SHORT).show();
+            //System.out.println("Permission is not granted");
             // Permission is not granted
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE
             );
         }
-        String path = "storage/emulated/0";
+        String path = Environment
+                .getExternalStorageDirectory()
+                .getAbsolutePath();
         loadPath(path, this);
     }
 
     private void loadPath(String path, Context context){
-        List<FileModel> fileModel = new ArrayList<>();
-        if (!path.equals(pathMain)){
-            fileModel.add(0, new FileModel("...", "", pathMain, 0));
+        if((new File(path).isDirectory())){
+            List<FileModel> fileModel = new ArrayList<>();
+            if (!path.equals(pathMain)){
+                fileModel.add(0, new FileModel("...", "", pathMain, 0));
+            }
+            FileOperation fileOperation = new FileOperation();
+            fileModel.addAll(fileOperation.fileModelLoad(path, context));
+            Settings.updatePreferences(context);
+            mFileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
+            mFileList.setAdapter(mFileExploreAdapter);
         }
-        FileOperation fileOperation = new FileOperation();
-        fileModel.addAll(fileOperation.fileModelLoad(path, context));
-        Settings.updatePreferences(context);
-        mFileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
-        mFileList.setAdapter(mFileExploreAdapter);
     }
 
     public void onClick(View view){

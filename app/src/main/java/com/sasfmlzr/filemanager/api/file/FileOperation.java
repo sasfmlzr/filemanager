@@ -49,7 +49,8 @@ public class FileOperation {
     public List<FileModel> fileModelLoad (String path, Context context){
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
                 DateFormat.SHORT, Locale.getDefault());
-        List<FileModel> mfileModel = new ArrayList<>();
+        List<FileModel> mFilesList = new ArrayList<>();
+        List<FileModel> mPathsList = new ArrayList<>();
         FileOperation fileOperation = new FileOperation();
         List<String> listFiles;
         listFiles = fileOperation.listFiles(path, context);
@@ -58,19 +59,28 @@ public class FileOperation {
             File file = new File(pathToFile);
             if(file.canRead() && file.exists()){
                 if(file.isFile()){
-                    mfileModel.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.file));
+                    mFilesList.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.file));
                 }else{
-                    mfileModel.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.path));
+                    mPathsList.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.path));
                 }
             }
         }
-        Collections.sort(mfileModel,  new Comparator<FileModel>(){
+
+        Collections.sort(mPathsList,  new Comparator<FileModel>(){
             @Override
             public int compare(FileModel lhs, FileModel rhs) {
                 return lhs.getNameFile().compareTo(rhs.getNameFile());
             }
         });
-        return mfileModel;
+        Collections.sort(mFilesList,  new Comparator<FileModel>(){
+            @Override
+            public int compare(FileModel lhs, FileModel rhs) {
+                return lhs.getNameFile().compareTo(rhs.getNameFile());
+            }
+        });
+        List<FileModel> mFileModel = new ArrayList<>(mPathsList);
+        mFileModel.addAll(mFilesList);
+        return mFileModel;
     }
 
 }
