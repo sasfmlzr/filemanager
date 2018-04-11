@@ -1,6 +1,10 @@
 package com.sasfmlzr.filemanager;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
+    protected final int READ_EXTERNAL_STORAGE = 0;
     private ListView mFileList;
     private FileExploreAdapter mFileExploreAdapter;
     @Override
@@ -30,11 +34,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         mFileList = findViewById(R.id.mFileList);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            System.out.println("Permission is not granted");
+            // Permission is not granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE
+            );
+        }
+
         List<FileModel> fileModel = new ArrayList<>();
         fileModel = fileModelLoad();
-
         Settings.updatePreferences(this);
-
         mFileExploreAdapter = new FileExploreAdapter(this, R.layout.current_item_file, fileModel);
         mFileList.setAdapter(mFileExploreAdapter);
     }
@@ -43,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private List<FileModel> fileModelLoad (){
 
         List<FileModel> mfileModel = new ArrayList<>();
-        String path = "storage";
+        String path = "storage/emulated/0";
         FileOperation fileOperation = new FileOperation();
         List<String> listFiles = new ArrayList<>();
         listFiles = fileOperation.listFiles(path, this);
@@ -53,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
         }
         return mfileModel;
     }
+
+
+
 
 
 
@@ -93,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         path = "/sdcard";
         list = fileOperation.listFiles(path, this);
         System.out.println(path + " " + list.size());
-        path = Environment
+        /*path = Environment
                 .getExternalStorageDirectory()
                 .getAbsolutePath();
         list = fileOperation.listFiles(path, this);
@@ -102,7 +117,8 @@ public class MainActivity extends AppCompatActivity {
         ddd=sss();
         for(String s : ddd){
             System.out.println(s);
-        }
+        }*/
+
 
     }
 
