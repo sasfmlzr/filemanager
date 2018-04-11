@@ -44,27 +44,17 @@ public class MainActivity extends AppCompatActivity {
             );
         }
 
-        List<FileModel> fileModel = new ArrayList<>();
-        fileModel = fileModelLoad();
+        List<FileModel> fileModel;
+        String path = "storage/emulated/0";
+        FileOperation fileOperation = new FileOperation();
+        fileModel = fileOperation.fileModelLoad(path, this);
         Settings.updatePreferences(this);
         mFileExploreAdapter = new FileExploreAdapter(this, R.layout.current_item_file, fileModel);
         mFileList.setAdapter(mFileExploreAdapter);
     }
 
 
-    private List<FileModel> fileModelLoad (){
 
-        List<FileModel> mfileModel = new ArrayList<>();
-        String path = "storage/emulated/0";
-        FileOperation fileOperation = new FileOperation();
-        List<String> listFiles = new ArrayList<>();
-        listFiles = fileOperation.listFiles(path, this);
-
-        for (String string:listFiles) {
-            mfileModel.add(new FileModel(string,"asdas","sadasa", R.drawable.file));
-        }
-        return mfileModel;
-    }
 
 
 

@@ -4,12 +4,15 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.sasfmlzr.filemanager.R;
+import com.sasfmlzr.filemanager.api.model.FileModel;
 import com.sasfmlzr.filemanager.api.other.RootCommands;
 import com.sasfmlzr.filemanager.api.other.Settings;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class FileOperation {
 
@@ -40,4 +43,26 @@ public class FileOperation {
         }
         return listFiles;
     }
+
+    public List<FileModel> fileModelLoad (String path, Context context){
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
+                DateFormat.SHORT, Locale.getDefault());
+        List<FileModel> mfileModel = new ArrayList<>();
+        FileOperation fileOperation = new FileOperation();
+        List<String> listFiles;
+        listFiles = fileOperation.listFiles(path, context);
+
+        for (String pathToFile:listFiles) {
+            File file = new File(pathToFile);
+            if(file.canRead() && file.exists()){
+                if(file.isFile()){
+                    mfileModel.add(new FileModel(file.getParent(),df.format(file.lastModified()), pathToFile, R.drawable.file));
+                }else{
+                    mfileModel.add(new FileModel(file.getParent(),df.format(file.lastModified()), pathToFile, R.drawable.path));
+                }
+            }
+        }
+        return mfileModel;
+    }
+
 }
