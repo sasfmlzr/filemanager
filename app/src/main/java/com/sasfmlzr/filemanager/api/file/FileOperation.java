@@ -1,9 +1,11 @@
 package com.sasfmlzr.filemanager.api.file;
 
 import android.content.Context;
+import android.os.Environment;
 import android.widget.Toast;
 
 import com.sasfmlzr.filemanager.R;
+import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.model.FileModel;
 import com.sasfmlzr.filemanager.api.other.RootCommands;
 import com.sasfmlzr.filemanager.api.other.Settings;
@@ -17,6 +19,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class FileOperation {
+    private final String pathMain = Environment
+            .getExternalStorageDirectory()
+            .getAbsolutePath();
 
     public List<String> listFiles(String path, Context context){
         ArrayList<String> listFiles = new ArrayList<>();
@@ -83,4 +88,21 @@ public class FileOperation {
         return mFileModel;
     }
 
+
+    public FileExploreAdapter loadPath(String path, Context context){
+        FileExploreAdapter mFileExploreAdapter;
+        if((new File(path).isDirectory())){
+
+            List<FileModel> fileModel = new ArrayList<>();
+            if (!path.equals(pathMain)){
+                fileModel.add(0, new FileModel("...", "", pathMain, 0));
+            }
+            FileOperation fileOperation = new FileOperation();
+            fileModel.addAll(fileOperation.fileModelLoad(path, context));
+            Settings.updatePreferences(context);
+            mFileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
+            return mFileExploreAdapter;
+
+        }return null;
+    }
 }

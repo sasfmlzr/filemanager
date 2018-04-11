@@ -24,11 +24,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     protected final int READ_EXTERNAL_STORAGE = 0;
-    private final String pathMain = Environment
-            .getExternalStorageDirectory()
-            .getAbsolutePath();
+
     private ListView mFileList;
     private FileExploreAdapter mFileExploreAdapter;
+    private final FileOperation mFileOperation = new FileOperation();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 FileModel fileModels = (FileModel)parent.getItemAtPosition(position);
-                loadPath(fileModels.getPathFile(), getApplicationContext());
+                mFileExploreAdapter = mFileOperation.loadPath(fileModels.getPathFile(), getApplicationContext());
+                mFileList.setAdapter(mFileExploreAdapter);
             }
         };
         mFileList.setOnItemClickListener(itemListener);
@@ -58,72 +58,13 @@ public class MainActivity extends AppCompatActivity {
         String path = Environment
                 .getExternalStorageDirectory()
                 .getAbsolutePath();
-        loadPath(path, this);
+        mFileExploreAdapter = mFileOperation.loadPath(path, this);
+        mFileList.setAdapter(mFileExploreAdapter);
     }
 
-    private void loadPath(String path, Context context){
-        if((new File(path).isDirectory())){
-            List<FileModel> fileModel = new ArrayList<>();
-            if (!path.equals(pathMain)){
-                fileModel.add(0, new FileModel("...", "", pathMain, 0));
-            }
-            FileOperation fileOperation = new FileOperation();
-            fileModel.addAll(fileOperation.fileModelLoad(path, context));
-            Settings.updatePreferences(context);
-            mFileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
-            mFileList.setAdapter(mFileExploreAdapter);
-        }
-    }
+
 
     public void onClick(View view){
-        FileOperation fileOperation = new FileOperation();
-        System.out.print("asd");
-        List<String> list = new ArrayList<>();
-        String path = "";
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        path = "/";
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        path = "emulated";
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        path = "storage";
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        path = "/storage";
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        path = "/storage/emulated";
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        path = "/storage/emulated/0";
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        path = "/storage/emulated/0/";
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        path = "/storage/self/";
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        path = "/storage/sdcard";
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        path = "/sdcard";
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        /*path = Environment
-                .getExternalStorageDirectory()
-                .getAbsolutePath();
-        list = fileOperation.listFiles(path, this);
-        System.out.println(path + " " + list.size());
-        ArrayList<String>  ddd = new ArrayList<>();
-        ddd=sss();
-        for(String s : ddd){
-            System.out.println(s);
-        }*/
-
-
     }
 
 }
