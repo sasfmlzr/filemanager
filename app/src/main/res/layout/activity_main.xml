@@ -24,26 +24,27 @@
 
     <LinearLayout
         android:id="@+id/item_browserList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="11dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="11dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:baselineAligned="false"
+        android:gravity="top"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:baselineAligned="false">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ListView
             android:id="@+id/mFileList"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="8dp"
+            android:layout_gravity="top"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             app:layout_constraintBottom_toBottomOf="parent"
