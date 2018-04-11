@@ -47,8 +47,8 @@ public class FileExploreAdapter extends ArrayAdapter<FileModel> {
         }
         FileModel fileModel= mFileModels.get(position);
         mViewHolder.dateView.setText(fileModel.getDateFile());
-        mViewHolder.bottomView.setText(fileModel.getNameFile());
-        mViewHolder.nameView.setText(fileModel.getTypeFile());
+        mViewHolder.bottomView.setText(fileModel.getPathFile());
+        mViewHolder.nameView.setText(fileModel.getNameFile());
         mViewHolder.imageView.setImageResource(fileModel.getImageIconFile());
         return convertView;
     }
