@@ -11,6 +11,8 @@ import com.sasfmlzr.filemanager.api.other.Settings;
 import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,12 +58,18 @@ public class FileOperation {
             File file = new File(pathToFile);
             if(file.canRead() && file.exists()){
                 if(file.isFile()){
-                    mfileModel.add(new FileModel(file.getParent(),df.format(file.lastModified()), pathToFile, R.drawable.file));
+                    mfileModel.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.file));
                 }else{
-                    mfileModel.add(new FileModel(file.getParent(),df.format(file.lastModified()), pathToFile, R.drawable.path));
+                    mfileModel.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.path));
                 }
             }
         }
+        Collections.sort(mfileModel,  new Comparator<FileModel>(){
+            @Override
+            public int compare(FileModel lhs, FileModel rhs) {
+                return lhs.getNameFile().compareTo(rhs.getNameFile());
+            }
+        });
         return mfileModel;
     }
 
