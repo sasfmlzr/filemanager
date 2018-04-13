@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         if (countActivity==0){
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permission is not granted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.permission_is_not_granted, Toast.LENGTH_SHORT).show();
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE
                 );
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                     fileExploreAdapter = fileOperation.loadPath(path, this);
                     fileList.setAdapter(fileExploreAdapter);
                 } else {
-                    Toast.makeText(this, "Please allow permissions",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, this.getString(R.string.allow_permission),Toast.LENGTH_SHORT).show();
                 }
             }
         }
