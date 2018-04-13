@@ -18,7 +18,7 @@ import com.sasfmlzr.filemanager.api.model.FileModel;
 import java.io.File;
 import static com.sasfmlzr.filemanager.api.other.Param.countActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     protected static final String STRING_CURRENT_PATH = "currentPath";
     protected static final int READ_EXTERNAL_STORAGE = 0;
     private ListView fileList;
@@ -37,21 +37,7 @@ public class MainActivity extends AppCompatActivity {
             fileList.setAdapter(fileExploreAdapter);
         }
         init(countActivity);
-        AdapterView.OnItemClickListener itemListener = new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                FileModel fileModels = (FileModel)parent.getItemAtPosition(position);
-                currentPath=fileModels.getPathFile();
-                File file = new File(fileModels.getPathFile());
-                if (file.isDirectory()) {
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    intent.putExtra(STRING_CURRENT_PATH, currentPath);
-                    countActivity++;
-                    startActivity(intent);
-                }
-            }
-        };
-        fileList.setOnItemClickListener(itemListener);
+        fileList.setOnItemClickListener(this);
     }
 
     public void onClick(View view){}
@@ -91,4 +77,16 @@ public class MainActivity extends AppCompatActivity {
         fileList.setAdapter(fileExploreAdapter);
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+        FileModel fileModels = (FileModel)parent.getItemAtPosition(position);
+        currentPath=fileModels.getPathFile();
+        File file = new File(fileModels.getPathFile());
+        if (file.isDirectory()) {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.putExtra(STRING_CURRENT_PATH, currentPath);
+            countActivity++;
+            startActivity(intent);
+        }
+    }
 }
