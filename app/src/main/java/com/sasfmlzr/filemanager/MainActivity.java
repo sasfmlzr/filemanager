@@ -19,6 +19,7 @@ import java.io.File;
 import static com.sasfmlzr.filemanager.api.other.Param.countActivity;
 
 public class MainActivity extends AppCompatActivity {
+    protected static final String STRING_CURRENT_PATH = "currentPath";
     protected static final int READ_EXTERNAL_STORAGE = 0;
     private ListView fileList;
     private FileExploreAdapter fileExploreAdapter;
@@ -30,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         fileList = findViewById(R.id.fileList);
         Intent intent = getIntent();
-        if (intent.hasExtra("mCurrentPath")) {
-            String currentPath = intent.getStringExtra("mCurrentPath");
+        if (intent.hasExtra(STRING_CURRENT_PATH)) {
+            String currentPath = intent.getStringExtra(STRING_CURRENT_PATH);
             fileExploreAdapter = fileOperation.loadPath(currentPath, getApplicationContext());
             fileList.setAdapter(fileExploreAdapter);
         }
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 File file = new File(fileModels.getPathFile());
                 if (file.isDirectory()) {
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    intent.putExtra("mCurrentPath", currentPath);
+                    intent.putExtra(STRING_CURRENT_PATH, currentPath);
                     countActivity++;
                     startActivity(intent);
                 }
@@ -52,7 +53,9 @@ public class MainActivity extends AppCompatActivity {
         };
         fileList.setOnItemClickListener(itemListener);
     }
+
     public void onClick(View view){}
+
     protected void init(int countActivity) {
         if (countActivity==0) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[],
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     private void setAdapter(){
         String path = Environment
                 .getExternalStorageDirectory()
