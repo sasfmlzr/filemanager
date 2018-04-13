@@ -27,11 +27,27 @@ public abstract class AbstractActivity extends AppCompatActivity {
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE
                 );
             }
-            String path = Environment
-                    .getExternalStorageDirectory()
-                    .getAbsolutePath();
-            mFileExploreAdapter = getmFileOperation().loadPath(path, this);
-            mFileList.setAdapter(mFileExploreAdapter);
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case READ_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    String path = Environment
+                            .getExternalStorageDirectory()
+                            .getAbsolutePath();
+                    mFileExploreAdapter = getmFileOperation().loadPath(path, this);
+                    mFileList.setAdapter(mFileExploreAdapter);
+
+                } else {
+                    Toast.makeText(this, "Please allow permissions",Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 
