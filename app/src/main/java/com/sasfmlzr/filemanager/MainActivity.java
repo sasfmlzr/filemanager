@@ -17,11 +17,11 @@ import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
 import com.sasfmlzr.filemanager.api.model.FileModel;
 import java.io.File;
-import static com.sasfmlzr.filemanager.api.other.Param.countActivity;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     protected static final String STRING_CURRENT_PATH = "currentPath";
     protected static final int READ_EXTERNAL_STORAGE = 0;
+    private static int countActivity =0;
     private ListView fileList;
     private FileExploreAdapter fileExploreAdapter;
     private static String currentPath;
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         READ_EXTERNAL_STORAGE);
             }
+            setAdapter();
         }
     }
 
