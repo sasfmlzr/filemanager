@@ -23,20 +23,17 @@ public class FileOperation {
             .getExternalStorageDirectory()
             .getAbsolutePath();
 
-    public List<String> listFiles(String path, Context context){
+    private List<String> listFiles(String path, Context context){
         ArrayList<String> listFiles = new ArrayList<>();
-        final boolean showhidden = Settings.showHiddenFiles();
+        final boolean showHidden = Settings.showHiddenFiles();
         final File file = new File(path);
-
-        if (!listFiles.isEmpty())
+        if (!listFiles.isEmpty()){
             listFiles.clear();
-        //if (file.exists()) {
+        }
         if (file.exists() && file.canRead()) {
             String[] list = file.list();
-
-            // add files/folder to ArrayList depending on hidden status
             for (String aList : list) {
-                if (!showhidden) {
+                if (!showHidden) {
                     if (aList.charAt(0) != '.')
                         listFiles.add(path + "/" + aList);
                 } else {
@@ -44,14 +41,14 @@ public class FileOperation {
                 }
             }
         } else if (Settings.rootAccess()) {
-            listFiles = RootCommands.listFiles(file.getAbsolutePath(), showhidden);
+            listFiles = RootCommands.listFiles(file.getAbsolutePath(), showHidden);
         } else {
             Toast.makeText(context, context.getString(R.string.cantreadfolder), Toast.LENGTH_SHORT).show();
         }
         return listFiles;
     }
 
-    public List<FileModel> fileModelLoad (String path, Context context){
+    private List<FileModel> fileModelLoad(String path, Context context){
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
                 DateFormat.SHORT, Locale.getDefault());
         List<FileModel> mFilesList = new ArrayList<>();
@@ -59,7 +56,6 @@ public class FileOperation {
         FileOperation fileOperation = new FileOperation();
         List<String> listFiles;
         listFiles = fileOperation.listFiles(path, context);
-
         for (String pathToFile:listFiles) {
             File file = new File(pathToFile);
             if(file.canRead() && file.exists()){
@@ -70,7 +66,6 @@ public class FileOperation {
                 }
             }
         }
-
         Collections.sort(mPathsList,  new Comparator<FileModel>(){
             @Override
             public int compare(FileModel lhs, FileModel rhs) {
@@ -92,7 +87,6 @@ public class FileOperation {
     public FileExploreAdapter loadPath(String path, Context context){
         FileExploreAdapter mFileExploreAdapter;
         if((new File(path).isDirectory())){
-
             List<FileModel> fileModel = new ArrayList<>();
             if (!path.equals(pathMain)){
                 fileModel.add(0, new FileModel("...", "", pathMain, 0));
@@ -102,7 +96,8 @@ public class FileOperation {
             Settings.updatePreferences(context);
             mFileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
             return mFileExploreAdapter;
-
-        }return null;
+        }else{
+            return null;
+        }
     }
 }

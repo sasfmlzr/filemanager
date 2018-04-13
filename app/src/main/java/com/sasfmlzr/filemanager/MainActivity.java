@@ -5,20 +5,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
-
 import com.sasfmlzr.filemanager.api.model.FileModel;
-
 import java.io.File;
 
 import static com.sasfmlzr.filemanager.api.other.Param.sCountActivity;
 /** View activity*/
 public class MainActivity extends AbstractActivity {
-
-
     private ListView mFileList;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,16 +20,13 @@ public class MainActivity extends AbstractActivity {
         mFileList = findViewById(R.id.mFileList);
         setmFileList(mFileList);
         Intent intent = getIntent();
-
         if(intent.hasExtra("mCurrentPath")){
-        String currentPath = intent.getStringExtra("mCurrentPath");
-        setmFileExploreAdapter(getmFileOperation().loadPath(currentPath, getApplicationContext()));
-        mFileList.setAdapter(getmFileExploreAdapter());
+            String currentPath = intent.getStringExtra("mCurrentPath");
+            setmFileExploreAdapter(getmFileOperation().loadPath(currentPath, getApplicationContext()));
+            mFileList.setAdapter(getmFileExploreAdapter());
         }
         beforeInit(sCountActivity);
-
-        Toast.makeText(this, "Main Activity",Toast.LENGTH_SHORT).show();
-
+        //Toast.makeText(this, "Main Activity",Toast.LENGTH_SHORT).show();
         AdapterView.OnItemClickListener itemListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {

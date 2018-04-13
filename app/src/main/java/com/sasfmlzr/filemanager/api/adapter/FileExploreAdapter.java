@@ -55,6 +55,7 @@ public class FileExploreAdapter extends ArrayAdapter<FileModel> {
     private  String getPath(int position){
         return mFileModels.get(position).getPathFile();
     }
+
     private class ViewHolder {
         final TextView nameView, bottomView,dateView;
         final ImageView imageView;
@@ -65,6 +66,4 @@ public class FileExploreAdapter extends ArrayAdapter<FileModel> {
             dateView =      view.findViewById(R.id.date_view);
         }
     }
-
-
 }

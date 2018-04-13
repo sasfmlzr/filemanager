@@ -1,7 +1,6 @@
 package com.sasfmlzr.filemanager.api.model;
 /** Model file class */
 public class FileModel {
-
     private String nameFile;
     private String dateFile;
     private String pathFile;
