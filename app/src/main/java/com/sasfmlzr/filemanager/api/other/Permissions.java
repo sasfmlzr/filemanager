@@ -2,7 +2,7 @@ package com.sasfmlzr.filemanager.api.other;
 
 import java.io.File;
 import java.io.Serializable;
-
+    /**It's class need for root commands*/
 public final class Permissions implements Serializable {
 
     private static final long serialVersionUID = 2682238088276963741L;

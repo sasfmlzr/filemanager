@@ -13,7 +13,7 @@ import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.model.FileModel;
 import java.util.List;
 
-
+/** File exlore to work properly listview */
 @SuppressWarnings("unused")
 public class FileExploreAdapter extends ArrayAdapter<FileModel> {
     private final LayoutInflater mInflater;

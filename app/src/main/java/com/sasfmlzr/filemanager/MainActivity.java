@@ -12,7 +12,7 @@ import com.sasfmlzr.filemanager.api.model.FileModel;
 import java.io.File;
 
 import static com.sasfmlzr.filemanager.api.other.Param.sCountActivity;
-
+/** View activity*/
 public class MainActivity extends AbstractActivity {
 
 

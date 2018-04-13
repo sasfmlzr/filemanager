@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
-
+/** Abstract activity need for easily reading code MainActivity*/
 public abstract class AbstractActivity extends AppCompatActivity {
     protected final int READ_EXTERNAL_STORAGE = 0;
     private ListView mFileList;
