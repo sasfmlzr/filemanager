@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         fileList = findViewById(R.id.mFileList);
         Intent intent = getIntent();
-        if(intent.hasExtra("mCurrentPath")){
+        if (intent.hasExtra("mCurrentPath")) {
             String currentPath = intent.getStringExtra("mCurrentPath");
             fileExploreAdapter = fileOperation.loadPath(currentPath, getApplicationContext());
             fileList.setAdapter(fileExploreAdapter);
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 FileModel fileModels = (FileModel)parent.getItemAtPosition(position);
                 currentPath=fileModels.getPathFile();
                 File file = new File(fileModels.getPathFile());
-                if(file.isDirectory()){
+                if (file.isDirectory()) {
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.putExtra("mCurrentPath", currentPath);
                     countActivity++;
@@ -55,11 +55,10 @@ public class MainActivity extends AppCompatActivity {
         fileList.setOnItemClickListener(itemListener);
     }
 
-    public void onClick(View view){
-    }
+    public void onClick(View view){}
 
-    protected void init(int countActivity){
-        if (countActivity==0){
+    protected void init(int countActivity) {
+        if (countActivity==0) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, R.string.permission_is_not_granted, Toast.LENGTH_SHORT).show();

@@ -22,9 +22,9 @@ public class FileExploreAdapter extends ArrayAdapter<FileModel> {
     private int res;
     private List<FileModel> fileModels;
 
-    public FileExploreAdapter(Context context, int resource, List<FileModel> fileModels){
+    public FileExploreAdapter(Context context, int resource, List<FileModel> fileModels) {
         super(context,resource,fileModels);
-        res =resource;
+        res = resource;
         this.context = context;
         resources = context.getResources();
         this.fileModels = fileModels;
@@ -34,36 +34,34 @@ public class FileExploreAdapter extends ArrayAdapter<FileModel> {
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        final ViewHolder mViewHolder;
-        if(convertView==null)
-        {
+        final ViewHolder viewHolder;
+        if(convertView==null) {
             convertView = inflater.inflate(R.layout.current_item_file, parent,false);
-            mViewHolder = new ViewHolder(convertView);
-            convertView.setTag(mViewHolder);
-        } else
-        {
-            mViewHolder = (ViewHolder) convertView.getTag();
+            viewHolder = new ViewHolder(convertView);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
         FileModel fileModel= fileModels.get(position);
-        mViewHolder.dateView.setText(fileModel.getDateFile());
-        mViewHolder.bottomView.setText(fileModel.getPathFile());
-        mViewHolder.nameView.setText(fileModel.getNameFile());
-        mViewHolder.imageView.setImageResource(fileModel.getImageIconFile());
+        viewHolder.dateView.setText(fileModel.getDateFile());
+        viewHolder.bottomView.setText(fileModel.getPathFile());
+        viewHolder.nameView.setText(fileModel.getNameFile());
+        viewHolder.imageView.setImageResource(fileModel.getImageIconFile());
         return convertView;
     }
 
-    private  String getPath(int position){
+    private String getPath(int position) {
         return fileModels.get(position).getPathFile();
     }
 
     private class ViewHolder {
         final TextView nameView, bottomView,dateView;
         final ImageView imageView;
-        ViewHolder(View view){
-            imageView =     view.findViewById(R.id.icon_file);
-            nameView =      view.findViewById(R.id.file_name_view);
-            bottomView =    view.findViewById(R.id.bottom_view);
-            dateView =      view.findViewById(R.id.date_view);
+        ViewHolder(View view) {
+            imageView = view.findViewById(R.id.icon_file);
+            nameView = view.findViewById(R.id.file_name_view);
+            bottomView = view.findViewById(R.id.bottom_view);
+            dateView = view.findViewById(R.id.date_view);
         }
     }
 }

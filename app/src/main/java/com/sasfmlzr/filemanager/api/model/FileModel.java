@@ -1,11 +1,12 @@
 package com.sasfmlzr.filemanager.api.model;
+
 /** Model file class */
 public class FileModel {
     private String nameFile;
     private String dateFile;
     private String pathFile;
     private int imageIconFile;
-    public FileModel(String nameFile, String dateFile, String pathFile, int imageIconFile){
+    public FileModel(String nameFile, String dateFile, String pathFile, int imageIconFile) {
         this.nameFile = nameFile;
         this.dateFile = dateFile;
         this.imageIconFile = imageIconFile;

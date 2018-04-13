@@ -3,13 +3,11 @@ package com.sasfmlzr.filemanager.api.file;
 import android.content.Context;
 import android.os.Environment;
 import android.widget.Toast;
-
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.model.FileModel;
 import com.sasfmlzr.filemanager.api.other.RootCommands;
 import com.sasfmlzr.filemanager.api.other.Settings;
-
 import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -27,7 +25,7 @@ public class FileOperation {
         ArrayList<String> listFiles = new ArrayList<>();
         final boolean showHidden = Settings.showHiddenFiles();
         final File file = new File(path);
-        if (!listFiles.isEmpty()){
+        if (!listFiles.isEmpty()) {
             listFiles.clear();
         }
         if (file.exists() && file.canRead()) {
@@ -83,12 +81,11 @@ public class FileOperation {
         return mFileModel;
     }
 
-
-    public FileExploreAdapter loadPath(String path, Context context){
+    public FileExploreAdapter loadPath(String path, Context context) {
         FileExploreAdapter mFileExploreAdapter;
-        if((new File(path).isDirectory())){
+        if((new File(path).isDirectory())) {
             List<FileModel> fileModel = new ArrayList<>();
-            if (!path.equals(pathMain)){
+            if (!path.equals(pathMain)) {
                 fileModel.add(0, new FileModel("...", "", pathMain, 0));
             }
             FileOperation fileOperation = new FileOperation();
@@ -96,7 +93,7 @@ public class FileOperation {
             Settings.updatePreferences(context);
             mFileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
             return mFileExploreAdapter;
-        }else{
+        } else {
             return null;
         }
     }
