@@ -18,19 +18,17 @@ import com.sasfmlzr.filemanager.api.model.FileModel;
 import java.io.File;
 import static com.sasfmlzr.filemanager.api.other.Param.countActivity;
 
-/** View activity*/
 public class MainActivity extends AppCompatActivity {
     protected static final int READ_EXTERNAL_STORAGE = 0;
     private ListView fileList;
     private FileExploreAdapter fileExploreAdapter;
     private String currentPath;
     private final FileOperation fileOperation = new FileOperation();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fileList = findViewById(R.id.mFileList);
+        fileList = findViewById(R.id.fileList);
         Intent intent = getIntent();
         if (intent.hasExtra("mCurrentPath")) {
             String currentPath = intent.getStringExtra("mCurrentPath");
@@ -54,37 +52,38 @@ public class MainActivity extends AppCompatActivity {
         };
         fileList.setOnItemClickListener(itemListener);
     }
-
     public void onClick(View view){}
-
     protected void init(int countActivity) {
         if (countActivity==0) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, R.string.permission_is_not_granted, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.permission_is_not_granted,
+                        Toast.LENGTH_SHORT).show();
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE
-                );
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        READ_EXTERNAL_STORAGE);
             }
         }
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case READ_EXTERNAL_STORAGE: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    String path = Environment
-                            .getExternalStorageDirectory()
-                            .getAbsolutePath();
-                    fileExploreAdapter = fileOperation.loadPath(path, this);
-                    fileList.setAdapter(fileExploreAdapter);
-                } else {
-                    Toast.makeText(this, this.getString(R.string.allow_permission),Toast.LENGTH_SHORT).show();
-                }
+                                           String permissions[],
+                                           int[] grantResults) {
+        if (requestCode==READ_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setAdapter();
+            } else {
+                Toast.makeText(this, this.getString(R.string.allow_permission),Toast.LENGTH_SHORT).show();
             }
         }
     }
+    private void setAdapter(){
+        String path = Environment
+                .getExternalStorageDirectory()
+                .getAbsolutePath();
+        fileExploreAdapter = fileOperation.loadPath(path, this);
+        fileList.setAdapter(fileExploreAdapter);
+    }
+
 }

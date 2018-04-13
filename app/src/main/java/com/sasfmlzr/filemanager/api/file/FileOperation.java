@@ -41,7 +41,7 @@ public class FileOperation {
         } else if (Settings.rootAccess()) {
             listFiles = RootCommands.listFiles(file.getAbsolutePath(), showHidden);
         } else {
-            Toast.makeText(context, context.getString(R.string.cantreadfolder), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.cant_read_folder), Toast.LENGTH_SHORT).show();
         }
         return listFiles;
     }
