@@ -6,7 +6,6 @@ import android.widget.Toast;
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.model.FileModel;
-
 import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
