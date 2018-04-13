@@ -42,7 +42,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ListView
-            android:id="@+id/mFileList"
+            android:id="@+id/fileList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top"

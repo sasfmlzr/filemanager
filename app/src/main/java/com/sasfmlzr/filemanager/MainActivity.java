@@ -20,39 +20,39 @@ import static com.sasfmlzr.filemanager.api.other.Param.sCountActivity;
 
 /** View activity*/
 public class MainActivity extends AppCompatActivity {
-    protected final int READ_EXTERNAL_STORAGE = 0;
-    private ListView mFileList;
-    private FileExploreAdapter mFileExploreAdapter;
-    private String mCurrentPath;
-    private final FileOperation mFileOperation = new FileOperation();
+    protected static final int READ_EXTERNAL_STORAGE = 0;
+    private ListView fileList;
+    private FileExploreAdapter fileExploreAdapter;
+    private String currentPath;
+    private final FileOperation fileOperation = new FileOperation();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mFileList = findViewById(R.id.mFileList);
+        fileList = findViewById(R.id.mFileList);
         Intent intent = getIntent();
         if(intent.hasExtra("mCurrentPath")){
             String currentPath = intent.getStringExtra("mCurrentPath");
-            mFileExploreAdapter= mFileOperation.loadPath(currentPath, getApplicationContext());
-            mFileList.setAdapter(mFileExploreAdapter);
+            fileExploreAdapter = fileOperation.loadPath(currentPath, getApplicationContext());
+            fileList.setAdapter(fileExploreAdapter);
         }
         init(sCountActivity);
         AdapterView.OnItemClickListener itemListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 FileModel fileModels = (FileModel)parent.getItemAtPosition(position);
-                mCurrentPath=fileModels.getPathFile();
+                currentPath=fileModels.getPathFile();
                 File file = new File(fileModels.getPathFile());
                 if(file.isDirectory()){
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    intent.putExtra("mCurrentPath", mCurrentPath);
+                    intent.putExtra("mCurrentPath", currentPath);
                     sCountActivity++;
                     startActivity(intent);
                 }
             }
         };
-        mFileList.setOnItemClickListener(itemListener);
+        fileList.setOnItemClickListener(itemListener);
     }
 
     public void onClick(View view){
@@ -80,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
                     String path = Environment
                             .getExternalStorageDirectory()
                             .getAbsolutePath();
-                    mFileExploreAdapter = mFileOperation.loadPath(path, this);
-                    mFileList.setAdapter(mFileExploreAdapter);
+                    fileExploreAdapter = fileOperation.loadPath(path, this);
+                    fileList.setAdapter(fileExploreAdapter);
                 } else {
                     Toast.makeText(this, "Please allow permissions",Toast.LENGTH_SHORT).show();
                 }
