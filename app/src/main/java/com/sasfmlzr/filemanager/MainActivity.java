@@ -16,7 +16,7 @@ import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
 import com.sasfmlzr.filemanager.api.model.FileModel;
 import java.io.File;
-import static com.sasfmlzr.filemanager.api.other.Param.sCountActivity;
+import static com.sasfmlzr.filemanager.api.other.Param.countActivity;
 
 /** View activity*/
 public class MainActivity extends AppCompatActivity {
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
             fileExploreAdapter = fileOperation.loadPath(currentPath, getApplicationContext());
             fileList.setAdapter(fileExploreAdapter);
         }
-        init(sCountActivity);
+        init(countActivity);
         AdapterView.OnItemClickListener itemListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                 if(file.isDirectory()){
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.putExtra("mCurrentPath", currentPath);
-                    sCountActivity++;
+                    countActivity++;
                     startActivity(intent);
                 }
             }

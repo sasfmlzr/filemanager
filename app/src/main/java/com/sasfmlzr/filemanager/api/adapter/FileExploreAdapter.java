@@ -16,19 +16,19 @@ import java.util.List;
 /** File exlore to work properly listview */
 @SuppressWarnings("unused")
 public class FileExploreAdapter extends ArrayAdapter<FileModel> {
-    private final LayoutInflater mInflater;
-    private final Context mContext;
-    private final Resources mResources;
-    private int mRes;
-    private List<FileModel> mFileModels;
+    private final LayoutInflater inflater;
+    private final Context context;
+    private final Resources resources;
+    private int res;
+    private List<FileModel> fileModels;
 
     public FileExploreAdapter(Context context, int resource, List<FileModel> fileModels){
         super(context,resource,fileModels);
-        mRes =resource;
-        mContext = context;
-        mResources = context.getResources();
-        mFileModels = fileModels;
-        mInflater = LayoutInflater.from(context);
+        res =resource;
+        this.context = context;
+        resources = context.getResources();
+        this.fileModels = fileModels;
+        inflater = LayoutInflater.from(context);
     }
 
     @NonNull
@@ -37,14 +37,14 @@ public class FileExploreAdapter extends ArrayAdapter<FileModel> {
         final ViewHolder mViewHolder;
         if(convertView==null)
         {
-            convertView = mInflater.inflate(R.layout.current_item_file, parent,false);
+            convertView = inflater.inflate(R.layout.current_item_file, parent,false);
             mViewHolder = new ViewHolder(convertView);
             convertView.setTag(mViewHolder);
         } else
         {
             mViewHolder = (ViewHolder) convertView.getTag();
         }
-        FileModel fileModel= mFileModels.get(position);
+        FileModel fileModel= fileModels.get(position);
         mViewHolder.dateView.setText(fileModel.getDateFile());
         mViewHolder.bottomView.setText(fileModel.getPathFile());
         mViewHolder.nameView.setText(fileModel.getNameFile());
@@ -53,7 +53,7 @@ public class FileExploreAdapter extends ArrayAdapter<FileModel> {
     }
 
     private  String getPath(int position){
-        return mFileModels.get(position).getPathFile();
+        return fileModels.get(position).getPathFile();
     }
 
     private class ViewHolder {
