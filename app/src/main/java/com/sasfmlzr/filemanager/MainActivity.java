@@ -21,7 +21,7 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     protected static final String STRING_CURRENT_PATH = "currentPath";
     protected static final int READ_EXTERNAL_STORAGE = 0;
-    private static int countActivity =0;
+    private static boolean firstLaunchActivity = true;
     private ListView fileList;
     private FileExploreAdapter fileExploreAdapter;
     private static String currentPath;
@@ -43,14 +43,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             fileExploreAdapter = fileOperation.loadPath(currentPath, getApplicationContext());
             fileList.setAdapter(fileExploreAdapter);
         }
-        init(countActivity);
+        init(firstLaunchActivity);
         fileList.setOnItemClickListener(this);
     }
 
     public void onClick(View view){}
 
-    protected void init(int countActivity) {
-        if (countActivity==0) {
+    protected void init(boolean countActivity) {
+        if (countActivity) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, R.string.permission_is_not_granted,
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         currentPath=fileModels.getPathFile();
         File file = new File(fileModels.getPathFile());
         if (file.isDirectory()) {
-            countActivity++;
+            firstLaunchActivity=false;
             start(this);
         }
     }
