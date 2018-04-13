@@ -1,6 +1,7 @@
 package com.sasfmlzr.filemanager;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -23,8 +24,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected static final int READ_EXTERNAL_STORAGE = 0;
     private ListView fileList;
     private FileExploreAdapter fileExploreAdapter;
-    private String currentPath;
+    private static String currentPath;
     private final FileOperation fileOperation = new FileOperation();
+    public static void start(Context context) {
+        Intent starter = new Intent(context, MainActivity.class);
+        starter.putExtra(STRING_CURRENT_PATH, currentPath);
+        context.startActivity(starter);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,10 +90,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         currentPath=fileModels.getPathFile();
         File file = new File(fileModels.getPathFile());
         if (file.isDirectory()) {
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            intent.putExtra(STRING_CURRENT_PATH, currentPath);
             countActivity++;
-            startActivity(intent);
+            start(this);
         }
     }
 }
