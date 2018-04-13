@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View view){
     }
 
-    public void init(int countActivity){
+    protected void init(int countActivity){
         if (countActivity==0){
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
