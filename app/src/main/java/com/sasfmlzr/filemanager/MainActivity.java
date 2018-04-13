@@ -11,7 +11,7 @@ import com.sasfmlzr.filemanager.api.model.FileModel;
 
 import java.io.File;
 
-import static com.sasfmlzr.filemanager.api.other.Param.countActivity;
+import static com.sasfmlzr.filemanager.api.other.Param.sCountActivity;
 
 public class MainActivity extends AbstractActivity {
 
@@ -33,7 +33,7 @@ public class MainActivity extends AbstractActivity {
         setmFileExploreAdapter(getmFileOperation().loadPath(currentPath, getApplicationContext()));
         mFileList.setAdapter(getmFileExploreAdapter());
         }
-        beforeInit(countActivity);
+        beforeInit(sCountActivity);
 
         Toast.makeText(this, "Main Activity",Toast.LENGTH_SHORT).show();
 
@@ -46,7 +46,7 @@ public class MainActivity extends AbstractActivity {
                 if(file.isDirectory()){
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.putExtra("mCurrentPath", getmCurrentPath());
-                    countActivity++;
+                    sCountActivity++;
                     startActivity(intent);
                 }
             }
