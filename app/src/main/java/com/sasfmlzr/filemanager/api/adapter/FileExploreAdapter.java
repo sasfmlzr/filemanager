@@ -9,23 +9,22 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.model.FileModel;
-
 import java.util.List;
+
 
 @SuppressWarnings("unused")
 public class FileExploreAdapter extends ArrayAdapter<FileModel> {
     private final LayoutInflater mInflater;
     private final Context mContext;
     private final Resources mResources;
-    private int res;
+    private int mRes;
     private List<FileModel> mFileModels;
 
     public FileExploreAdapter(Context context, int resource, List<FileModel> fileModels){
         super(context,resource,fileModels);
-        res=resource;
+        mRes =resource;
         mContext = context;
         mResources = context.getResources();
         mFileModels = fileModels;
