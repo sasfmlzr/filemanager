@@ -42,6 +42,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             String currentPath = intent.getStringExtra(STRING_CURRENT_PATH);
             fileExploreAdapter = fileOperation.loadPath(currentPath, getApplicationContext());
             fileList.setAdapter(fileExploreAdapter);
+        } else {
+            fileExploreAdapter = fileOperation.loadPath(Environment
+                    .getExternalStorageDirectory()
+                    .getAbsolutePath(), getApplicationContext());
+            fileList.setAdapter(fileExploreAdapter);
         }
         init(firstLaunchActivity);
         fileList.setOnItemClickListener(this);
