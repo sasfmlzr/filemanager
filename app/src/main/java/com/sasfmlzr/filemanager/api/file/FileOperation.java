@@ -99,23 +99,23 @@ public class FileOperation {
         intent.setAction(Intent.ACTION_VIEW);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            Uri contentUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", target);
+            Uri contentUri = FileProvider.getUriForFile(context,
+                    BuildConfig.APPLICATION_ID + ".fileprovider", target);
             intent.setDataAndType(contentUri, fileType);
-            if (fileType != null) {
+            if (fileType != null && !fileType.equals("*/*")) {
                 intent.setDataAndType(contentUri, fileType);
-            } else {
-                intent.setDataAndType(contentUri, "*/*");
+                if (context.getPackageManager().queryIntentActivities(intent, 0).isEmpty()) {
+                    Toast.makeText(context, R.string.cantopenfile, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    context.startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(context, context.getString(R.string.cantopenfile)
+                                    + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                }
             }
-        }
-        if (context.getPackageManager().queryIntentActivities(intent, 0).isEmpty()) {
-            Toast.makeText(context, R.string.cantopenfile, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        try {
-            context.startActivity(intent);
-        } catch (Exception e) {
-            Toast.makeText(context, context.getString(R.string.cantopenfile) + e.getMessage(),
-                    Toast.LENGTH_SHORT).show();
         }
     }
 }
