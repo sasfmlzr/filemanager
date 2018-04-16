@@ -95,9 +95,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         FileModel fileModels = (FileModel)parent.getItemAtPosition(position);
         currentPath=fileModels.getPathFile();
         File file = new File(fileModels.getPathFile());
-        if (file.isDirectory()) {
-            firstLaunchActivity=false;
-            start(this);
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                firstLaunchActivity=false;
+                start(this);
+            } else if (file.isFile()){
+                fileOperation.openFile(getApplicationContext(), file);
+            }
         }
     }
 }
