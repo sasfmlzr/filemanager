@@ -90,8 +90,9 @@ public class TypeFiles {
                 type = FILE_TYPES.get(extensionLowerCase);
             }
         }
-        if (type == null)
+        if (type == null){
             type = "*/*";
+        }
         return type;
     }
 
