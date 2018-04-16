@@ -39,8 +39,8 @@ public class FileOperation {
     private List<FileModel> fileModelLoad(String path, Context context){
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
                 DateFormat.SHORT, Locale.getDefault());
-        List<FileModel> mFilesList = new ArrayList<>();
-        List<FileModel> mPathsList = new ArrayList<>();
+        List<FileModel> filesList = new ArrayList<>();
+        List<FileModel> pathsList = new ArrayList<>();
         FileOperation fileOperation = new FileOperation();
         List<String> listFiles;
         listFiles = fileOperation.listFiles(path, context);
@@ -48,31 +48,31 @@ public class FileOperation {
             File file = new File(pathToFile);
             if(file.canRead() && file.exists()){
                 if(file.isFile()){
-                    mFilesList.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.file));
+                    filesList.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.file));
                 }else{
-                    mPathsList.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.path));
+                    pathsList.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.path));
                 }
             }
         }
-        Collections.sort(mPathsList,  new Comparator<FileModel>(){
+        Collections.sort(pathsList,  new Comparator<FileModel>(){
             @Override
             public int compare(FileModel lhs, FileModel rhs) {
                 return lhs.getNameFile().compareTo(rhs.getNameFile());
             }
         });
-        Collections.sort(mFilesList,  new Comparator<FileModel>(){
+        Collections.sort(filesList,  new Comparator<FileModel>(){
             @Override
             public int compare(FileModel lhs, FileModel rhs) {
                 return lhs.getNameFile().compareTo(rhs.getNameFile());
             }
         });
-        List<FileModel> mFileModel = new ArrayList<>(mPathsList);
-        mFileModel.addAll(mFilesList);
-        return mFileModel;
+        List<FileModel> fileModelList = new ArrayList<>(pathsList);
+        fileModelList.addAll(filesList);
+        return fileModelList;
     }
 
     public FileExploreAdapter loadPath(String path, Context context) {
-        FileExploreAdapter mFileExploreAdapter;
+        FileExploreAdapter fileExploreAdapter;
         if((new File(path).isDirectory())) {
             List<FileModel> fileModel = new ArrayList<>();
             if (!path.equals(pathMain)) {
@@ -80,8 +80,8 @@ public class FileOperation {
             }
             FileOperation fileOperation = new FileOperation();
             fileModel.addAll(fileOperation.fileModelLoad(path, context));
-            mFileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
-            return mFileExploreAdapter;
+            fileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
+            return fileExploreAdapter;
         } else {
             return null;
         }
