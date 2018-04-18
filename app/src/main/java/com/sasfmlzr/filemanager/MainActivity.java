@@ -19,14 +19,17 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     protected static final String STRING_CURRENT_PATH = "currentPath";
+    protected static final String DEFAULT_PATH = Environment
+            .getExternalStorageDirectory()
+            .getAbsolutePath();
     protected static final int READ_EXTERNAL_STORAGE = 0;
 
     private ListView fileList;
     private FileExploreAdapter fileExploreAdapter;
-    private static String currentPath;
+    private String currentPath;
     private final FileOperation fileOperation = new FileOperation();
 
-    public static void start(Context context) {
+    public void start(Context context) {
         Intent starter = new Intent(context, MainActivity.class);
         starter.putExtra(STRING_CURRENT_PATH, currentPath);
         context.startActivity(starter);
@@ -39,22 +42,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         fileList = findViewById(R.id.fileList);
         Intent intent = getIntent();
         if (intent.hasExtra(STRING_CURRENT_PATH)) {
-            String currentPath = intent.getStringExtra(STRING_CURRENT_PATH);
-            fileExploreAdapter = fileOperation.loadPath(currentPath, getApplicationContext());
-            fileList.setAdapter(fileExploreAdapter);
+            setAdapter(intent.getStringExtra(STRING_CURRENT_PATH));
         } else {
-            fileExploreAdapter = fileOperation.loadPath(Environment
-                    .getExternalStorageDirectory()
-                    .getAbsolutePath(), getApplicationContext());
-            fileList.setAdapter(fileExploreAdapter);
+            setAdapter(DEFAULT_PATH);
         }
-        init();
+        requestPermissions();
         fileList.setOnItemClickListener(this);
     }
 
     public void onClick(View view){}
 
-    protected void init() {
+    private void setAdapter(String path){
+        fileExploreAdapter = fileOperation.loadPath(path, this);
+        fileList.setAdapter(fileExploreAdapter);
+    }
+
+    protected void requestPermissions() {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, R.string.permission_is_not_granted,
@@ -72,19 +75,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (requestCode==READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setAdapter();
+                setAdapter(DEFAULT_PATH);
             } else {
                 Toast.makeText(this, this.getString(R.string.allow_permission),Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    private void setAdapter(){
-        String path = Environment
-                .getExternalStorageDirectory()
-                .getAbsolutePath();
-        fileExploreAdapter = fileOperation.loadPath(path, this);
-        fileList.setAdapter(fileExploreAdapter);
     }
 
     @Override

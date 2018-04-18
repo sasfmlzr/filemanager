@@ -1,7 +1,6 @@
 package com.sasfmlzr.filemanager.api.adapter;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,18 +15,13 @@ import java.util.List;
 import java.util.Locale;
 
 /** File exlore to work properly listview */
-@SuppressWarnings("unused")
 public class FileExploreAdapter extends ArrayAdapter<File> {
     private final Context context;
-    private final Resources resources;
-    private int res;
     private List<File> fileModels;
 
     public FileExploreAdapter(Context context, int resource, List<File> fileModels) {
         super(context,resource,fileModels);
-        res = resource;
         this.context = context;
-        resources = context.getResources();
         this.fileModels = fileModels;
     }
 
@@ -35,9 +29,9 @@ public class FileExploreAdapter extends ArrayAdapter<File> {
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         final LayoutInflater inflater = LayoutInflater.from(context);
+        final ViewHolder viewHolder;
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
                 DateFormat.SHORT, Locale.getDefault());
-        final ViewHolder viewHolder;
         if(convertView==null) {
             convertView = inflater.inflate(R.layout.current_item_file, parent,false);
             viewHolder = new ViewHolder(convertView);
@@ -55,10 +49,6 @@ public class FileExploreAdapter extends ArrayAdapter<File> {
             viewHolder.imageView.setImageResource(R.drawable.path);
         }
         return convertView;
-    }
-
-    private String getPath(int position) {
-        return fileModels.get(position).getAbsolutePath();
     }
 
     private class ViewHolder {
