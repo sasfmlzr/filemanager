@@ -21,16 +21,16 @@ public class FileOperation {
     private final String pathMain = Environment
             .getExternalStorageDirectory()
             .getAbsolutePath();
-    private List<String> listFiles(String path, Context context){
-        ArrayList<String> listFiles = new ArrayList<>();
+    private List<File> listFiles(String path, Context context){
+        ArrayList<File> listFiles = new ArrayList<>();
         final File file = new File(path);
         if (!listFiles.isEmpty()) {
             listFiles.clear();
         }
         if (file.exists() && file.canRead()) {
-            String[] list = file.list();
-            for (String aList : list) {
-                listFiles.add(path + "/" + aList);
+            File[] list = file.listFiles();
+            for (File file1 : list) {
+                listFiles.add(new File(path,file1.getName()));
             }
         } else {
             Toast.makeText(context, context.getString(R.string.cant_read_folder), Toast.LENGTH_SHORT).show();
@@ -42,10 +42,10 @@ public class FileOperation {
         List<File> filesList = new ArrayList<>();
         List<File> pathsList = new ArrayList<>();
         FileOperation fileOperation = new FileOperation();
-        List<String> listFiles;
+        List<File> listFiles;
         listFiles = fileOperation.listFiles(path, context);
-        for (String pathToFile:listFiles) {
-            File file = new File(pathToFile);
+        for (File pathToFile:listFiles) {
+            File file = new File(pathToFile.getAbsolutePath());
             if(file.canRead() && file.exists()){
                 if(file.isFile()){
                     filesList.add(file);
