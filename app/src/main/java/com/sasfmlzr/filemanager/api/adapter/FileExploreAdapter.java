@@ -18,7 +18,6 @@ import java.util.Locale;
 /** File exlore to work properly listview */
 @SuppressWarnings("unused")
 public class FileExploreAdapter extends ArrayAdapter<File> {
-    private final LayoutInflater inflater;
     private final Context context;
     private final Resources resources;
     private int res;
@@ -30,12 +29,12 @@ public class FileExploreAdapter extends ArrayAdapter<File> {
         this.context = context;
         resources = context.getResources();
         this.fileModels = fileModels;
-        inflater = LayoutInflater.from(context);
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        final LayoutInflater inflater = LayoutInflater.from(context);
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
                 DateFormat.SHORT, Locale.getDefault());
         final ViewHolder viewHolder;
