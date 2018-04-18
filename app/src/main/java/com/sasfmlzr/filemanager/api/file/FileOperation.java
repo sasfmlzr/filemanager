@@ -72,7 +72,9 @@ public class FileOperation {
     public static FileExploreAdapter loadPath(String path, Context context) {
         FileExploreAdapter fileExploreAdapter;
         File file = new File(path);
-        if ((file.isDirectory())) {
+        if (!file.isDirectory()){
+            return null;
+        }
             List<File> fileModel = new ArrayList<>();
             if (!path.equals(pathMain)) {
                 File nullFile = new File(pathMain);
@@ -82,9 +84,6 @@ public class FileOperation {
             fileModel.addAll(fileOperation.fileModelLoad(path, context));
             fileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
             return fileExploreAdapter;
-        } else {
-            return null;
-        }
     }
 
     public static void openFile(final Context context, final File target) {

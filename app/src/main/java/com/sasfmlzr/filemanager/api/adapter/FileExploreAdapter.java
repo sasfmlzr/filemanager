@@ -33,15 +33,15 @@ public class FileExploreAdapter extends ArrayAdapter<File> {
         final ViewHolder viewHolder;
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
                 DateFormat.SHORT, Locale.getDefault());
-        if(convertView==null) {
+        if (convertView == null) {
             convertView = inflater.inflate(R.layout.current_item_file, parent,false);
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        File fileModel= fileModels.get(position);
-        if (position==0 && fileModel.getAbsolutePath().equals(Environment
+        File fileModel = fileModels.get(position);
+        if (position == 0 && fileModel.getAbsolutePath().equals(Environment
                 .getExternalStorageDirectory()
                 .getAbsolutePath())){
             viewHolder.dateView.setText(null);

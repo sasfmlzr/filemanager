@@ -25,9 +25,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected static final int READ_EXTERNAL_STORAGE = 0;
 
     private ListView fileList;
-    private FileExploreAdapter fileExploreAdapter;
     private String currentPath;
-    private final FileOperation fileOperation = new FileOperation();
 
     public void start(Context context) {
         Intent starter = new Intent(context, MainActivity.class);
@@ -51,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private void setAdapter(String path){
-        fileExploreAdapter = fileOperation.loadPath(path, this);
+        FileExploreAdapter fileExploreAdapter = FileOperation.loadPath(path, this);
         fileList.setAdapter(fileExploreAdapter);
     }
 
@@ -83,13 +81,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         File fileModels = (File) parent.getItemAtPosition(position);
-        currentPath=fileModels.getAbsolutePath();
+        currentPath = fileModels.getAbsolutePath();
         File file = new File(currentPath);
         if (file.exists()) {
             if (file.isDirectory()) {
                 start(this);
-            } else if (file.isFile()){
-                fileOperation.openFile(getApplicationContext(), file);
+            } else if (file.isFile()) {
+                FileOperation.openFile(getApplicationContext(), file);
             }
         }
     }
