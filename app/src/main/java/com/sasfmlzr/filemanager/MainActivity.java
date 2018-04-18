@@ -21,11 +21,12 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     protected static final String STRING_CURRENT_PATH = "currentPath";
     protected static final int READ_EXTERNAL_STORAGE = 0;
-    private static boolean firstLaunchActivity = true;
+
     private ListView fileList;
     private FileExploreAdapter fileExploreAdapter;
     private static String currentPath;
     private final FileOperation fileOperation = new FileOperation();
+
     public static void start(Context context) {
         Intent starter = new Intent(context, MainActivity.class);
         starter.putExtra(STRING_CURRENT_PATH, currentPath);
@@ -48,14 +49,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     .getAbsolutePath(), getApplicationContext());
             fileList.setAdapter(fileExploreAdapter);
         }
-        init(firstLaunchActivity);
+        init();
         fileList.setOnItemClickListener(this);
     }
 
     public void onClick(View view){}
 
-    protected void init(boolean countActivity) {
-        if (countActivity) {
+    protected void init() {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, R.string.permission_is_not_granted,
@@ -64,8 +64,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         READ_EXTERNAL_STORAGE);
             }
-            setAdapter();
-        }
     }
 
     @Override
@@ -97,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         File file = new File(fileModels.getPathFile());
         if (file.exists()) {
             if (file.isDirectory()) {
-                firstLaunchActivity=false;
                 start(this);
             } else if (file.isFile()){
                 fileOperation.openFile(getApplicationContext(), file);
