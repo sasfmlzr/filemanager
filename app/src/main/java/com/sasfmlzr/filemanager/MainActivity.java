@@ -15,7 +15,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
-import com.sasfmlzr.filemanager.api.model.FileModel;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
@@ -90,9 +89,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-        FileModel fileModels = (FileModel)parent.getItemAtPosition(position);
-        currentPath=fileModels.getPathFile();
-        File file = new File(fileModels.getPathFile());
+        File fileModels = (File) parent.getItemAtPosition(position);
+        currentPath=fileModels.getAbsolutePath();
+        File file = new File(currentPath);
         if (file.exists()) {
             if (file.isDirectory()) {
                 start(this);

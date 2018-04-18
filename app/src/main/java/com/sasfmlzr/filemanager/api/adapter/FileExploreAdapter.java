@@ -10,19 +10,21 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.sasfmlzr.filemanager.R;
-import com.sasfmlzr.filemanager.api.model.FileModel;
+import java.io.File;
+import java.text.DateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /** File exlore to work properly listview */
 @SuppressWarnings("unused")
-public class FileExploreAdapter extends ArrayAdapter<FileModel> {
+public class FileExploreAdapter extends ArrayAdapter<File> {
     private final LayoutInflater inflater;
     private final Context context;
     private final Resources resources;
     private int res;
-    private List<FileModel> fileModels;
+    private List<File> fileModels;
 
-    public FileExploreAdapter(Context context, int resource, List<FileModel> fileModels) {
+    public FileExploreAdapter(Context context, int resource, List<File> fileModels) {
         super(context,resource,fileModels);
         res = resource;
         this.context = context;
@@ -34,6 +36,8 @@ public class FileExploreAdapter extends ArrayAdapter<FileModel> {
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
+                DateFormat.SHORT, Locale.getDefault());
         final ViewHolder viewHolder;
         if(convertView==null) {
             convertView = inflater.inflate(R.layout.current_item_file, parent,false);
@@ -42,16 +46,20 @@ public class FileExploreAdapter extends ArrayAdapter<FileModel> {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        FileModel fileModel= fileModels.get(position);
-        viewHolder.dateView.setText(fileModel.getDateFile());
-        viewHolder.bottomView.setText(fileModel.getPathFile());
-        viewHolder.nameView.setText(fileModel.getNameFile());
-        viewHolder.imageView.setImageResource(fileModel.getImageIconFile());
+        File fileModel= fileModels.get(position);
+        viewHolder.dateView.setText(df.format(fileModel.lastModified()));
+        viewHolder.bottomView.setText(fileModel.getAbsolutePath());
+        viewHolder.nameView.setText(fileModel.getName());
+        if (fileModel.isFile()) {
+            viewHolder.imageView.setImageResource(R.drawable.file);
+        } else if (fileModel.isDirectory()) {
+            viewHolder.imageView.setImageResource(R.drawable.path);
+        }
         return convertView;
     }
 
     private String getPath(int position) {
-        return fileModels.get(position).getPathFile();
+        return fileModels.get(position).getAbsolutePath();
     }
 
     private class ViewHolder {
