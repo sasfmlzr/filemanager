@@ -1,6 +1,7 @@
 package com.sasfmlzr.filemanager.api.adapter;
 
 import android.content.Context;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,14 @@ public class FileExploreAdapter extends ArrayAdapter<File> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         File fileModel= fileModels.get(position);
+        if (position==0 && fileModel.getAbsolutePath().equals(Environment
+                .getExternalStorageDirectory()
+                .getAbsolutePath())){
+            viewHolder.dateView.setText(null);
+            viewHolder.bottomView.setText(null);
+            viewHolder.nameView.setText("...");
+            return  convertView;
+        }
         viewHolder.dateView.setText(df.format(fileModel.lastModified()));
         viewHolder.bottomView.setText(fileModel.getAbsolutePath());
         viewHolder.nameView.setText(fileModel.getName());
