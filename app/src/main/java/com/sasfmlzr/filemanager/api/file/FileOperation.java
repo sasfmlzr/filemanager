@@ -13,12 +13,13 @@ import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.other.TypeFiles;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class FileOperation {
-    private final String pathMain = Environment
+    private final static String pathMain = Environment
             .getExternalStorageDirectory()
             .getAbsolutePath();
     private List<File> listFiles(String path, Context context){
@@ -28,10 +29,7 @@ public class FileOperation {
             listFiles.clear();
         }
         if (file.exists() && file.canRead()) {
-            File[] list = file.listFiles();
-            for (File file1 : list) {
-                listFiles.add(new File(path,file1.getName()));
-            }
+            listFiles.addAll(Arrays.asList(file.listFiles()));
         } else {
             Toast.makeText(context, context.getString(R.string.cant_read_folder), Toast.LENGTH_SHORT).show();
         }
@@ -41,8 +39,8 @@ public class FileOperation {
     private List<File> fileModelLoad(String path, Context context){
         List<File> filesList = new ArrayList<>();
         List<File> pathsList = new ArrayList<>();
-        FileOperation fileOperation = new FileOperation();
         List<File> listFiles;
+        FileOperation fileOperation = new FileOperation();
         listFiles = fileOperation.listFiles(path, context);
         for (File pathToFile:listFiles) {
             File file = new File(pathToFile.getAbsolutePath());
@@ -71,10 +69,10 @@ public class FileOperation {
         return fileModelList;
     }
 
-    public FileExploreAdapter loadPath(String path, Context context) {
+    public static FileExploreAdapter loadPath(String path, Context context) {
         FileExploreAdapter fileExploreAdapter;
         File file = new File(path);
-        if((file.isDirectory())) {
+        if ((file.isDirectory())) {
             List<File> fileModel = new ArrayList<>();
             if (!path.equals(pathMain)) {
                 File nullFile = new File(pathMain);
@@ -89,7 +87,7 @@ public class FileOperation {
         }
     }
 
-    public void openFile(final Context context, final File target) {
+    public static void openFile(final Context context, final File target) {
         final String fileType = TypeFiles.getFileType(target);
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
