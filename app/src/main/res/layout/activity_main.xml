@@ -6,23 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="29dp"
-        android:layout_marginLeft="31dp"
-        android:layout_marginStart="31dp"
-        android:onClick="onClick"
-        android:text="Button"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/item_browserList"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/item_browserList"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
     <LinearLayout
         android:id="@+id/item_browserList"
         android:layout_width="0dp"
@@ -43,7 +26,7 @@
 
         <ListView
             android:id="@+id/fileList"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="top"
             android:layout_weight="1"

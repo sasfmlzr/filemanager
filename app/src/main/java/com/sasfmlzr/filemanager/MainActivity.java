@@ -50,8 +50,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         fileList.setOnItemClickListener(this);
     }
 
-    public void onClick(View view){}
-
     private void setAdapter(String path){
         fileExploreAdapter = fileOperation.loadPath(path, this);
         fileList.setAdapter(fileExploreAdapter);
