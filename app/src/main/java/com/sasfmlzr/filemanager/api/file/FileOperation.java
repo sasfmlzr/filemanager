@@ -76,10 +76,6 @@ public class FileOperation {
             return null;
         }
             List<File> fileModel = new ArrayList<>();
-            if (!path.equals(pathMain)) {
-                File nullFile = new File(pathMain);
-                fileModel.add(0, nullFile);
-            }
             FileOperation fileOperation = new FileOperation();
             fileModel.addAll(fileOperation.fileModelLoad(path, context));
             fileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
