@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private void setAdapter(String path){
-        List fileList = FileOperation.loadPath(path, this);
+        List<File> fileList = FileOperation.loadPath(path, this);
         FileExploreAdapter fileExploreAdapter = new FileExploreAdapter(this,
                 R.layout.current_item_file, fileList);
         fileListView.setAdapter(fileExploreAdapter);
