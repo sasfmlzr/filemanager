@@ -4,15 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 import com.sasfmlzr.filemanager.BuildConfig;
 import com.sasfmlzr.filemanager.R;
-import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.other.TypeFiles;
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,9 +17,6 @@ import java.util.Comparator;
 import java.util.List;
 
 public class FileOperation {
-    private final static String pathMain = Environment
-            .getExternalStorageDirectory()
-            .getAbsolutePath();
     private List<File> listFiles(String path, Context context){
         ArrayList<File> listFiles = new ArrayList<>();
         final File file = new File(path);
@@ -71,7 +65,6 @@ public class FileOperation {
     }
 
     public static ArrayList<File> loadPath(String path, Context context) {
-        FileExploreAdapter fileExploreAdapter;
         File file = new File(path);
         if (!file.isDirectory()){
             return null;
