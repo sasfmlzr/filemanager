@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     protected static final String STRING_CURRENT_PATH = "currentPath";
@@ -25,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             .getAbsolutePath();
     protected static final int READ_EXTERNAL_STORAGE = 0;
 
-    private ListView fileList;
+    private ListView fileListView;
     private String currentPath;
 
     public void start(Context context) {
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        fileList = findViewById(R.id.fileList);
+        fileListView = findViewById(R.id.fileList);
         Intent intent = getIntent();
         if (intent.hasExtra(STRING_CURRENT_PATH)) {
             setAdapter(intent.getStringExtra(STRING_CURRENT_PATH));
@@ -48,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             setAdapter(DEFAULT_PATH);
         }
         requestPermissions();
-        fileList.setOnItemClickListener(this);
+        fileListView.setOnItemClickListener(this);
     }
 
     @Override
@@ -60,8 +62,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private void setAdapter(String path){
-        FileExploreAdapter fileExploreAdapter = FileOperation.loadPath(path, this);
-        fileList.setAdapter(fileExploreAdapter);
+        List fileList = FileOperation.loadPath(path, this);
+        FileExploreAdapter fileExploreAdapter = new FileExploreAdapter(this,
+                R.layout.current_item_file, fileList);
+        fileListView.setAdapter(fileExploreAdapter);
     }
 
     protected void requestPermissions() {

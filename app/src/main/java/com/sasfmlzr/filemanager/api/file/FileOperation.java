@@ -12,6 +12,7 @@ import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.other.TypeFiles;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,17 +70,14 @@ public class FileOperation {
         return fileModelList;
     }
 
-    public static FileExploreAdapter loadPath(String path, Context context) {
+    public static ArrayList<File> loadPath(String path, Context context) {
         FileExploreAdapter fileExploreAdapter;
         File file = new File(path);
         if (!file.isDirectory()){
             return null;
         }
-            List<File> fileModel = new ArrayList<>();
-            FileOperation fileOperation = new FileOperation();
-            fileModel.addAll(fileOperation.fileModelLoad(path, context));
-            fileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
-            return fileExploreAdapter;
+        FileOperation fileOperation = new FileOperation();
+            return new ArrayList<>(fileOperation.fileModelLoad(path, context));
     }
 
     public static void openFile(final Context context, final File target) {
