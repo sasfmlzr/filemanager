@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,11 +98,37 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
         fileListView.setAdapter(fileExploreAdapter);
     }
 
+    private static final String TAG = "Fragment";
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause(): " + getTag());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume(): " + getTag());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: " + getTag());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: " + getTag());
+    }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         File fileModels = (File) parent.getItemAtPosition(position);
         currentPath = fileModels.getAbsolutePath();
-        File file = new File(currentPath);
+        File file = new File(fileModels.getAbsolutePath());
         if (file.exists()) {
             if (file.isDirectory()) {
                 listener.onArticleSelected(currentPath);
