@@ -30,10 +30,10 @@ public class MainActivity extends AppCompatActivity implements FragmentFileView.
 
     public void onClickBackHome() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() != 0) {
+        if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
         } else {
-            this.finish();
+            finish();
         }
     }
 
@@ -44,13 +44,13 @@ public class MainActivity extends AppCompatActivity implements FragmentFileView.
             fragment = new FragmentFileView();
             fragmentManager.beginTransaction()
                     .add(R.id.fileviewonactivity, fragment)
-                    .addToBackStack(null)
+                    .addToBackStack("Main")
                     .commit();
         } else {
             fragment = FragmentFileView.newInstance(currentPath);
             fragmentManager.beginTransaction()
                     .replace(R.id.fileviewonactivity, fragment)
-                    .addToBackStack(null).commit();
+                    .addToBackStack(currentPath).commit();
         }
     }
 
