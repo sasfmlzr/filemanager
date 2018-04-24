@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity implements FragmentFileView.
     protected static final String DEFAULT_PATH = Environment
             .getExternalStorageDirectory()
             .getAbsolutePath();
-
+    private String currentPath;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,21 +28,23 @@ public class MainActivity extends AppCompatActivity implements FragmentFileView.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onClickBackHome();
+            callBackHome();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
     }
 
-    public void onClickBackHome() {
+    public void callBackHome() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
+            fragmentManager.popBackStack(DEFAULT_PATH, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         } else {
             finish();
         }
     }
+
+
 
     public void createFragment(String currentPath) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -60,5 +62,6 @@ public class MainActivity extends AppCompatActivity implements FragmentFileView.
     @Override
     public void onArticleSelected(String currentPath) {
         createFragment(currentPath);
+        this.currentPath=currentPath;
     }
 }
