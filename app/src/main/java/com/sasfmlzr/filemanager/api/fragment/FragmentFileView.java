@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,9 +24,6 @@ import java.util.List;
 
 public class FragmentFileView extends Fragment implements AdapterView.OnItemClickListener {
     protected static final String STRING_CURRENT_PATH = "currentPath";
-    protected static final String DEFAULT_PATH = Environment
-            .getExternalStorageDirectory()
-            .getAbsolutePath();
     private static final int READ_EXTERNAL_STORAGE = 0;
 
     private ListView fileListView;
@@ -52,8 +48,6 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
         super.onCreate(saveInstanceState);
         if (getArguments() != null && getArguments().containsKey(STRING_CURRENT_PATH)) {
             currentPath = getArguments().getString(STRING_CURRENT_PATH);
-        } else {
-            currentPath = DEFAULT_PATH;
         }
     }
 

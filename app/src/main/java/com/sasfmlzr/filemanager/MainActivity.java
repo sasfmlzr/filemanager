@@ -1,7 +1,9 @@
 package com.sasfmlzr.filemanager;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -9,6 +11,9 @@ import android.view.MenuItem;
 import com.sasfmlzr.filemanager.api.fragment.FragmentFileView;
 
 public class MainActivity extends AppCompatActivity implements FragmentFileView.OnArticleSelectedListener {
+    protected static final String DEFAULT_PATH = Environment
+            .getExternalStorageDirectory()
+            .getAbsolutePath();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,15 +22,17 @@ public class MainActivity extends AppCompatActivity implements FragmentFileView.
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        createFragment(null);
+        createFragment(DEFAULT_PATH);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onClickBackHome();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     public void onClickBackHome() {
@@ -40,18 +47,14 @@ public class MainActivity extends AppCompatActivity implements FragmentFileView.
     public void createFragment(String currentPath) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentFileView fragment;
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        fragment = FragmentFileView.newInstance(currentPath);
         if (fragmentManager.getBackStackEntryCount() == 0) {
-            fragment = new FragmentFileView();
-            fragmentManager.beginTransaction()
-                    .add(R.id.fileviewonactivity, fragment)
-                    .addToBackStack("Main")
-                    .commit();
+            transaction.add(R.id.fileviewonactivity, fragment);
         } else {
-            fragment = FragmentFileView.newInstance(currentPath);
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fileviewonactivity, fragment)
-                    .addToBackStack(currentPath).commit();
+            transaction.replace(R.id.fileviewonactivity, fragment);
         }
+        transaction.addToBackStack(currentPath).commit();
     }
 
     @Override
