@@ -1,5 +1,6 @@
 package com.sasfmlzr.filemanager.api.fragment;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +18,6 @@ import android.widget.Toast;
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
-import com.sasfmlzr.filemanager.api.other.Permissions;
 import java.io.File;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
     protected static final String DEFAULT_PATH = Environment
             .getExternalStorageDirectory()
             .getAbsolutePath();
+    private static final int READ_EXTERNAL_STORAGE = 0;
 
     private ListView fileListView;
     private String currentPath;
@@ -49,7 +51,7 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
         if (getArguments() != null && getArguments().containsKey(STRING_CURRENT_PATH)) {
             currentPath = getArguments().getString(STRING_CURRENT_PATH);
         } else {
-            currentPath=DEFAULT_PATH;
+            currentPath = DEFAULT_PATH;
         }
     }
 
@@ -59,23 +61,34 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_file_view, container, false);
         fileListView = view.findViewById(R.id.fileList);
-        Permissions.requestReadPermissions(getActivity());
+        requestReadPermissions();
         setAdapter(currentPath);
         fileListView.setOnItemClickListener(this);
         return view;
+    }
+
+    public void requestReadPermissions() {
+        if (ContextCompat.checkSelfPermission(getActivity().getLayoutInflater().getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getActivity().getLayoutInflater().getContext(), R.string.permission_is_not_granted,
+                    Toast.LENGTH_SHORT).show();
+            requestPermissions(
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    READ_EXTERNAL_STORAGE);
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[],
                                            int[] grantResults) {
-        if (requestCode==0) {
+        if (requestCode == 0) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setAdapter(currentPath);
             } else {
-                Permissions.requestReadPermissions(getActivity());
-                Toast.makeText(view.getContext(), this.getString(R.string.allow_permission),Toast.LENGTH_SHORT).show();
+                requestReadPermissions();
+                Toast.makeText(view.getContext(), this.getString(R.string.allow_permission), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -95,7 +108,6 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
         if (file.exists()) {
             if (file.isDirectory()) {
                 listener.onArticleSelected(currentPath);
-                //start(this);
             } else if (file.isFile()) {
                 FileOperation.openFile(view.getContext(), file);
             }
