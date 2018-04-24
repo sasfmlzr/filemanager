@@ -1,6 +1,7 @@
 package com.sasfmlzr.filemanager.api.other;
 
 import android.webkit.MimeTypeMap;
+
 import java.io.File;
 import java.util.Locale;
 
@@ -17,7 +18,7 @@ public class TypeFiles {
             final MimeTypeMap mime = MimeTypeMap.getSingleton();
             type = mime.getMimeTypeFromExtension(extensionLowerCase);
         }
-        if (type == null){
+        if (type == null) {
             type = "*/*";
         }
         return type;
@@ -25,6 +26,6 @@ public class TypeFiles {
 
     private static String getExtension(String name) {
         int index = name.lastIndexOf(".");
-        return index==-1?"":name.substring(index + 1, name.length());
+        return index == -1 ? "" : name.substring(index + 1, name.length());
     }
 }

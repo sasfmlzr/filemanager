@@ -15,13 +15,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
+
 import java.io.File;
 import java.util.List;
 
-public class FragmentFileView extends Fragment implements AdapterView.OnItemClickListener{
+public class FragmentFileView extends Fragment implements AdapterView.OnItemClickListener {
     protected static final String STRING_CURRENT_PATH = "currentPath";
     protected static final String DEFAULT_PATH = Environment
             .getExternalStorageDirectory()
@@ -30,7 +32,7 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
 
     private ListView fileListView;
     private String currentPath;
-    private  View view;
+    private View view;
     private OnArticleSelectedListener listener;
 
     public interface OnArticleSelectedListener {
@@ -93,7 +95,7 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
         }
     }
 
-    private void setAdapter(String path){
+    private void setAdapter(String path) {
         List<File> fileList = FileOperation.loadPath(path, view.getContext());
         FileExploreAdapter fileExploreAdapter = new FileExploreAdapter(view.getContext(),
                 R.layout.current_item_file, fileList);
