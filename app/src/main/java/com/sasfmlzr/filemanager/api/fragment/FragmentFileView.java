@@ -120,7 +120,7 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
         try {
             listener = (OnArticleSelectedListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArticleSelectedListener");
+            throw new ClassCastException(context.toString() + " " + R.string.exception_OnArticleSelectedListener);
         }
     }
 }
