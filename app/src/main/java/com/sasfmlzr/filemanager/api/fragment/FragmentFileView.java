@@ -61,6 +61,7 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
         requestReadPermissions();
         setAdapter(currentPath);
         fileListView.setOnItemClickListener(this);
+        Log.d(TAG, "onCreateView: " + getTag());
         return view;
     }
 
@@ -127,11 +128,11 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         File fileModels = (File) parent.getItemAtPosition(position);
-        currentPath = fileModels.getAbsolutePath();
+        //currentPath = fileModels.getAbsolutePath();
         File file = new File(fileModels.getAbsolutePath());
         if (file.exists()) {
             if (file.isDirectory()) {
-                listener.onArticleSelected(currentPath);
+                listener.onArticleSelected(fileModels.getAbsolutePath());
             } else if (file.isFile()) {
                 FileOperation.openFile(view.getContext(), file);
             }

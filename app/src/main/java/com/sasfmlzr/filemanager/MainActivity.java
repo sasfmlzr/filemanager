@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity implements FragmentFileView.
             .getExternalStorageDirectory()
             .getAbsolutePath();
     private String currentPath;
+    private boolean firstFragment=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,25 +40,24 @@ public class MainActivity extends AppCompatActivity implements FragmentFileView.
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
-            //fragmentManager.popBackStack(DEFAULT_PATH, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         } else {
             finish();
         }
     }
-
-
 
     public void createFragment(String currentPath) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentFileView fragment;
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         fragment = FragmentFileView.newInstance(currentPath);
-        if (fragmentManager.getBackStackEntryCount() == 0) {
+        if (firstFragment) {
             transaction.add(R.id.fileviewonactivity, fragment, currentPath);
+            firstFragment = false;
         } else {
             transaction.replace(R.id.fileviewonactivity, fragment, currentPath);
+            transaction.addToBackStack(currentPath);
         }
-        transaction.addToBackStack(currentPath).commit();
+        transaction.commit();
     }
 
     @Override
