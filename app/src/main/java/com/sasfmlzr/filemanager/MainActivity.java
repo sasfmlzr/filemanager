@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.sasfmlzr.filemanager.api.fragment.DirectoryNavigationFragment;
 import com.sasfmlzr.filemanager.api.fragment.FileViewFragment;
 
 public class MainActivity extends AppCompatActivity implements FileViewFragment.OnArticleSelectedListener {
@@ -15,7 +16,8 @@ public class MainActivity extends AppCompatActivity implements FileViewFragment.
             .getExternalStorageDirectory()
             .getAbsolutePath();
     private String currentPath;
-    private boolean firstFragment=true;
+    private boolean firstFragment = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements FileViewFragment.
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        createFragment(DEFAULT_PATH);
+        createFileViewFragment(DEFAULT_PATH);
     }
 
     @Override
@@ -45,11 +47,11 @@ public class MainActivity extends AppCompatActivity implements FileViewFragment.
         }
     }
 
-    public void createFragment(String currentPath) {
+    public void createFileViewFragment(String currentPath) {
+        FileViewFragment fragment = FileViewFragment.newInstance(currentPath);
+        ;
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FileViewFragment fragment;
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        fragment = FileViewFragment.newInstance(currentPath);
         if (firstFragment) {
             transaction.add(R.id.fileviewonactivity, fragment, currentPath);
             firstFragment = false;
@@ -60,9 +62,17 @@ public class MainActivity extends AppCompatActivity implements FileViewFragment.
         transaction.commit();
     }
 
+    public void createDirectoryNavigationFragment() {
+        DirectoryNavigationFragment fragment = new DirectoryNavigationFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_directory_navigation, fragment);
+        transaction.commit();
+    }
+
     @Override
     public void onArticleSelected(String currentPath) {
-        createFragment(currentPath);
-        this.currentPath=currentPath;
+        createFileViewFragment(currentPath);
+        this.currentPath = currentPath;
     }
 }
