@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,7 @@ import com.sasfmlzr.filemanager.api.file.FileOperation;
 import java.io.File;
 import java.util.List;
 
-public class FragmentFileView extends Fragment implements AdapterView.OnItemClickListener {
+public class FileViewFragment extends Fragment implements AdapterView.OnItemClickListener {
     protected static final String STRING_CURRENT_PATH = "currentPath";
     private static final int READ_EXTERNAL_STORAGE = 0;
 
@@ -36,9 +35,9 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
         void onArticleSelected(String currentPath);
     }
 
-    public static FragmentFileView newInstance(final String content) {
+    public static FileViewFragment newInstance(final String content) {
         Bundle args = new Bundle();
-        FragmentFileView fragment = new FragmentFileView();
+        FileViewFragment fragment = new FileViewFragment();
         args.putString(STRING_CURRENT_PATH, content);
         fragment.setArguments(args);
         return fragment;
@@ -47,7 +46,7 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
-        if (getArguments() != null && getArguments().containsKey(STRING_CURRENT_PATH)) {
+        if (getArguments() != null) {
             currentPath = getArguments().getString(STRING_CURRENT_PATH);
         }
     }
@@ -61,7 +60,6 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
         requestReadPermissions();
         setAdapter(currentPath);
         fileListView.setOnItemClickListener(this);
-        Log.d(TAG, "onCreateView: " + getTag());
         return view;
     }
 
@@ -99,40 +97,12 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
         fileListView.setAdapter(fileExploreAdapter);
     }
 
-    private static final String TAG = "Fragment";
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause(): " + getTag());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume(): " + getTag());
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy: " + getTag());
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop: " + getTag());
-    }
-
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-        File fileModels = (File) parent.getItemAtPosition(position);
-        //currentPath = fileModels.getAbsolutePath();
-        File file = new File(fileModels.getAbsolutePath());
+        File file = (File) parent.getItemAtPosition(position);
         if (file.exists()) {
             if (file.isDirectory()) {
-                listener.onArticleSelected(fileModels.getAbsolutePath());
+                listener.onArticleSelected(file.getAbsolutePath());
             } else if (file.isFile()) {
                 FileOperation.openFile(view.getContext(), file);
             }
@@ -145,7 +115,8 @@ public class FragmentFileView extends Fragment implements AdapterView.OnItemClic
         try {
             listener = (OnArticleSelectedListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " " + R.string.exception_OnArticleSelectedListener);
+            throw new ClassCastException(context.toString() + " " +
+                    R.string.exception_OnArticleSelectedListener);
         }
     }
 }

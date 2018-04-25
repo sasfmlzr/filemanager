@@ -8,9 +8,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.sasfmlzr.filemanager.api.fragment.FragmentFileView;
+import com.sasfmlzr.filemanager.api.fragment.FileViewFragment;
 
-public class MainActivity extends AppCompatActivity implements FragmentFileView.OnArticleSelectedListener {
+public class MainActivity extends AppCompatActivity implements FileViewFragment.OnArticleSelectedListener {
     protected static final String DEFAULT_PATH = Environment
             .getExternalStorageDirectory()
             .getAbsolutePath();
@@ -29,14 +29,14 @@ public class MainActivity extends AppCompatActivity implements FragmentFileView.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            callBackHome();
+            callBackStackFragments();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
     }
 
-    public void callBackHome() {
+    public void callBackStackFragments() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
@@ -47,9 +47,9 @@ public class MainActivity extends AppCompatActivity implements FragmentFileView.
 
     public void createFragment(String currentPath) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentFileView fragment;
+        FileViewFragment fragment;
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        fragment = FragmentFileView.newInstance(currentPath);
+        fragment = FileViewFragment.newInstance(currentPath);
         if (firstFragment) {
             transaction.add(R.id.fileviewonactivity, fragment, currentPath);
             firstFragment = false;
