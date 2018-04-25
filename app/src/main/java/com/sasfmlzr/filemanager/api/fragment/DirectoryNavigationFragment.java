@@ -50,16 +50,13 @@ public class DirectoryNavigationFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_directory_navigation, container, false);
         recyclerView = view.findViewById(R.id.navigation_recycler_view);
-        //layoutManager = new LinearLayoutManager(view.getContext());
         layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false);
-        //layoutManager.sc
         recyclerView.setLayoutManager(layoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 LinearLayoutManager.HORIZONTAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
         //TODO: ask FileSystems.getDefault().getSeparator()
-        List<String> tempList = Arrays.asList(currentPath.split("/"));
-        List<String> strings = new ArrayList<>(tempList.subList(1, tempList.size()));
+        List<String> strings = Arrays.asList(currentPath.split("/"));
         adapter = new DirectoryNavigationAdapter(strings);
         recyclerView.setAdapter(adapter);
         return view;
