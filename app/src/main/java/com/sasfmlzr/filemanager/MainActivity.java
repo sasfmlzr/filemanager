@@ -11,7 +11,9 @@ import android.view.MenuItem;
 import com.sasfmlzr.filemanager.api.fragment.DirectoryNavigationFragment;
 import com.sasfmlzr.filemanager.api.fragment.FileViewFragment;
 
-public class MainActivity extends AppCompatActivity implements FileViewFragment.OnArticleSelectedListener {
+public class MainActivity extends AppCompatActivity
+        implements FileViewFragment.OnFragmentInteractionListener,
+        DirectoryNavigationFragment.OnFragmentInteractionListener {
     protected static final String DEFAULT_PATH = Environment
             .getExternalStorageDirectory()
             .getAbsolutePath();
@@ -64,20 +66,25 @@ public class MainActivity extends AppCompatActivity implements FileViewFragment.
 
     public void createDirectoryNavigationFragment() {
         DirectoryNavigationFragment fragment;
-        if (currentPath.isEmpty()) {
+        if (firstFragment) {
             fragment = DirectoryNavigationFragment.newInstance(DEFAULT_PATH);
         } else {
             fragment = DirectoryNavigationFragment.newInstance(currentPath);
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fragment_directory_navigation, fragment);
+        transaction.replace(R.id.directory_navigation, fragment);
         transaction.commit();
     }
 
     @Override
-    public void onArticleSelected(String currentPath) {
+    public void onDirectorySelected(String currentPath) {
         createFileViewFragment(currentPath);
         this.currentPath = currentPath;
+    }
+
+    @Override
+    public void onDirectoryNavigation() {
+
     }
 }

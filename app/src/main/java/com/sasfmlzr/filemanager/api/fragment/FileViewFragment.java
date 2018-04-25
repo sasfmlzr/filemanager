@@ -29,10 +29,10 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     private ListView fileListView;
     private String currentPath;
     private View view;
-    private OnArticleSelectedListener listener;
+    private OnFragmentInteractionListener listener;
 
-    public interface OnArticleSelectedListener {
-        void onArticleSelected(String currentPath);
+    public interface OnFragmentInteractionListener {
+        void onDirectorySelected(String currentPath);
     }
 
     public static FileViewFragment newInstance(final String content) {
@@ -102,7 +102,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         File file = (File) parent.getItemAtPosition(position);
         if (file.exists()) {
             if (file.isDirectory()) {
-                listener.onArticleSelected(file.getAbsolutePath());
+                listener.onDirectorySelected(file.getAbsolutePath());
             } else if (file.isFile()) {
                 FileOperation.openFile(view.getContext(), file);
             }
@@ -113,7 +113,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (OnArticleSelectedListener) context;
+            listener = (OnFragmentInteractionListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " " +
                     R.string.exception_OnArticleSelectedListener);

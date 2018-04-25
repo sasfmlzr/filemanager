@@ -1,23 +1,28 @@
 package com.sasfmlzr.filemanager.api.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.sasfmlzr.filemanager.R;
+import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
 
 public class DirectoryNavigationFragment extends Fragment {
     protected static final String STRING_CURRENT_PATH = "currentPath";
 
-
-    // TODO: Rename and change types of parameters
     private String currentPath;
+    private View view;
+    private OnFragmentInteractionListener listener;
 
-    private OnFragmentInteractionListener mListener;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+
 
     public static DirectoryNavigationFragment newInstance(String currentPath) {
         DirectoryNavigationFragment fragment = new DirectoryNavigationFragment();
@@ -38,14 +43,26 @@ public class DirectoryNavigationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_directory_navigation, container, false);
+        view = inflater.inflate(R.layout.fragment_directory_navigation, container, false);
+        recyclerView = view.findViewById(R.id.navigation_recycler_view);
+        layoutManager = new LinearLayoutManager(view.getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        String[] strings = new String[10];
+        strings[0] = "asdasa";
+        strings[1] = "asdas";
+        strings[2] = "asdddddds";
+        strings[3] = "asdaaaas";
+        strings[4] = "asdssss";
+        adapter = new DirectoryNavigationAdapter(strings);
+        recyclerView.setAdapter(adapter);
+        return view;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+            listener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -55,11 +72,11 @@ public class DirectoryNavigationFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        listener = null;
     }
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onDirectoryNavigation();
     }
 }
