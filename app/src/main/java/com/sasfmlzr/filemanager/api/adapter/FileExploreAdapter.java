@@ -9,19 +9,23 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.sasfmlzr.filemanager.R;
+
 import java.io.File;
 import java.text.DateFormat;
 import java.util.List;
 import java.util.Locale;
 
-/** File exlore to work properly listview */
+/**
+ * File exlore to work properly listview
+ */
 public class FileExploreAdapter extends ArrayAdapter<File> {
     private final Context context;
     private List<File> fileModels;
 
     public FileExploreAdapter(Context context, int resource, List<File> fileModels) {
-        super(context,resource,fileModels);
+        super(context, resource, fileModels);
         this.context = context;
         this.fileModels = fileModels;
     }
@@ -33,8 +37,9 @@ public class FileExploreAdapter extends ArrayAdapter<File> {
         final ViewHolder viewHolder;
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
                 DateFormat.SHORT, Locale.getDefault());
+
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.current_item_file, parent,false);
+            convertView = inflater.inflate(R.layout.current_item_file, parent, false);
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
         } else {
@@ -53,8 +58,9 @@ public class FileExploreAdapter extends ArrayAdapter<File> {
     }
 
     private class ViewHolder {
-        final TextView nameView, bottomView,dateView;
+        final TextView nameView, bottomView, dateView;
         final ImageView imageView;
+
         ViewHolder(View view) {
             imageView = view.findViewById(R.id.icon_file);
             nameView = view.findViewById(R.id.file_name_view);

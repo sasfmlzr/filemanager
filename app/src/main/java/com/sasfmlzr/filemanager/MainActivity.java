@@ -14,12 +14,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
+
 import java.io.File;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     protected static final String STRING_CURRENT_PATH = "currentPath";
     protected static final String DEFAULT_PATH = Environment
             .getExternalStorageDirectory()
@@ -54,13 +56,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             this.finish();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setAdapter(String path){
+    private void setAdapter(String path) {
         List<File> fileList = FileOperation.loadPath(path, this);
         FileExploreAdapter fileExploreAdapter = new FileExploreAdapter(this,
                 R.layout.current_item_file, fileList);
@@ -68,26 +70,26 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     protected void requestPermissions() {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, R.string.permission_is_not_granted,
-                        Toast.LENGTH_SHORT).show();
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        READ_EXTERNAL_STORAGE);
-            }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, R.string.permission_is_not_granted,
+                    Toast.LENGTH_SHORT).show();
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    READ_EXTERNAL_STORAGE);
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[],
                                            int[] grantResults) {
-        if (requestCode==READ_EXTERNAL_STORAGE) {
+        if (requestCode == READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setAdapter(DEFAULT_PATH);
             } else {
-                Toast.makeText(this, this.getString(R.string.allow_permission),Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, this.getString(R.string.allow_permission), Toast.LENGTH_SHORT).show();
             }
         }
     }
