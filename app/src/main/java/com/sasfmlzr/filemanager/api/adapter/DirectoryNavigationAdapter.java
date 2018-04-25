@@ -8,8 +8,10 @@ import android.widget.TextView;
 
 import com.sasfmlzr.filemanager.R;
 
+import java.util.List;
+
 public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNavigationAdapter.ViewHolder> {
-    private String[] dataset;
+    private List<String> dataset;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         final TextView textView;
@@ -20,8 +22,8 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
         }
     }
 
-    public DirectoryNavigationAdapter(String[] myDataset) {
-        dataset = myDataset;
+    public DirectoryNavigationAdapter(List<String> directory) {
+        dataset = directory;
     }
 
     @Override
@@ -35,12 +37,12 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.textView.setText(dataset[position]);
+        holder.textView.setText(dataset.get(position));
 
     }
 
     @Override
     public int getItemCount() {
-        return dataset.length;
+        return dataset.size();
     }
 }

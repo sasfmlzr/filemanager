@@ -3,6 +3,7 @@ package com.sasfmlzr.filemanager.api.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +12,10 @@ import android.view.ViewGroup;
 
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DirectoryNavigationFragment extends Fragment {
     protected static final String STRING_CURRENT_PATH = "currentPath";
@@ -45,14 +50,16 @@ public class DirectoryNavigationFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_directory_navigation, container, false);
         recyclerView = view.findViewById(R.id.navigation_recycler_view);
-        layoutManager = new LinearLayoutManager(view.getContext());
+        //layoutManager = new LinearLayoutManager(view.getContext());
+        layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false);
+        //layoutManager.sc
         recyclerView.setLayoutManager(layoutManager);
-        String[] strings = new String[10];
-        strings[0] = "asdasa";
-        strings[1] = "asdas";
-        strings[2] = "asdddddds";
-        strings[3] = "asdaaaas";
-        strings[4] = "asdssss";
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                LinearLayoutManager.HORIZONTAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+        //TODO: ask FileSystems.getDefault().getSeparator()
+        List<String> tempList = Arrays.asList(currentPath.split("/"));
+        List<String> strings = new ArrayList<>(tempList.subList(1, tempList.size()));
         adapter = new DirectoryNavigationAdapter(strings);
         recyclerView.setAdapter(adapter);
         return view;

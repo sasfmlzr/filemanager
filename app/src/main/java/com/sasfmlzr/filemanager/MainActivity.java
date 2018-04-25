@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         createFileViewFragment(DEFAULT_PATH);
-        createDirectoryNavigationFragment();
+        createDirectoryNavigationFragment(DEFAULT_PATH);
     }
 
     @Override
@@ -64,16 +64,15 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
-    public void createDirectoryNavigationFragment() {
-        DirectoryNavigationFragment fragment;
-        if (firstFragment) {
-            fragment = DirectoryNavigationFragment.newInstance(DEFAULT_PATH);
-        } else {
-            fragment = DirectoryNavigationFragment.newInstance(currentPath);
-        }
+    public void createDirectoryNavigationFragment(String currentPath) {
+        DirectoryNavigationFragment fragment = DirectoryNavigationFragment.newInstance(currentPath);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.directory_navigation, fragment);
+        if (firstFragment) {
+            transaction.add(R.id.directory_navigation, fragment);
+        } else {
+            transaction.replace(R.id.directory_navigation, fragment);
+        }
         transaction.commit();
     }
 
@@ -81,6 +80,7 @@ public class MainActivity extends AppCompatActivity
     public void onDirectorySelected(String currentPath) {
         createFileViewFragment(currentPath);
         this.currentPath = currentPath;
+        createDirectoryNavigationFragment(currentPath);
     }
 
     @Override
