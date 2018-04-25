@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.sasfmlzr.filemanager.api.fragment.DirectoryNavigationFragment;
 import com.sasfmlzr.filemanager.api.fragment.FileViewFragment;
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDirectoryNavigation() {
-
+    public void onDirectoryNavigation(String currentPath) {
+        Toast.makeText(this, currentPath, Toast.LENGTH_SHORT).show();
     }
 }

@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.sasfmlzr.filemanager.R;
 
 import java.util.List;
-
+//TODO: convert currentPath string to File
 public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNavigationAdapter.ViewHolder> {
     private List<String> dataset;
 
@@ -38,7 +38,6 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.textView.setText(dataset.get(position));
-
     }
 
     @Override

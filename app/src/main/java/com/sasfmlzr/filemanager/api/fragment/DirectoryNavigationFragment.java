@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -80,7 +79,6 @@ public class DirectoryNavigationFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onDirectoryNavigation();
+        void onDirectoryNavigation(String currentPath);
     }
 }
