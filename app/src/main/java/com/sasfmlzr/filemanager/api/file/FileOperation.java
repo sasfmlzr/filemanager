@@ -1,108 +1,95 @@
 package com.sasfmlzr.filemanager.api.file;
 
 import android.content.Context;
-import android.os.Environment;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
+import com.sasfmlzr.filemanager.BuildConfig;
 import com.sasfmlzr.filemanager.R;
-import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
-import com.sasfmlzr.filemanager.api.model.FileModel;
-import com.sasfmlzr.filemanager.api.other.RootCommands;
-import com.sasfmlzr.filemanager.api.other.Settings;
+import com.sasfmlzr.filemanager.api.other.TypeFiles;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 public class FileOperation {
-    private final String pathMain = Environment
-            .getExternalStorageDirectory()
-            .getAbsolutePath();
-
-    public List<String> listFiles(String path, Context context){
-        ArrayList<String> listFiles = new ArrayList<>();
-        final boolean showhidden = Settings.showHiddenFiles();
+    private List<File> listFiles(String path, Context context) {
+        ArrayList<File> listFiles = new ArrayList<>();
         final File file = new File(path);
-
-        if (!listFiles.isEmpty())
+        if (!listFiles.isEmpty()) {
             listFiles.clear();
-        //if (file.exists()) {
+        }
         if (file.exists() && file.canRead()) {
-            String[] list = file.list();
-
-            // add files/folder to ArrayList depending on hidden status
-            for (String aList : list) {
-                if (!showhidden) {
-                    if (aList.charAt(0) != '.')
-                        listFiles.add(path + "/" + aList);
-                } else {
-                    listFiles.add(path + "/" + aList);
-                }
-            }
-        } else if (Settings.rootAccess()) {
-            listFiles = RootCommands.listFiles(file.getAbsolutePath(), showhidden);
+            listFiles.addAll(Arrays.asList(file.listFiles()));
         } else {
-            Toast.makeText(context, context.getString(R.string.cantreadfolder), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.cant_read_folder), Toast.LENGTH_SHORT).show();
         }
         return listFiles;
     }
 
-    public List<FileModel> fileModelLoad (String path, Context context){
-        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
-                DateFormat.SHORT, Locale.getDefault());
-        List<FileModel> mFilesList = new ArrayList<>();
-        List<FileModel> mPathsList = new ArrayList<>();
+    private List<File> fileModelLoad(String path, Context context) {
+        List<File> filesList = new ArrayList<>();
+        List<File> pathsList = new ArrayList<>();
+        List<File> listFiles;
         FileOperation fileOperation = new FileOperation();
-        List<String> listFiles;
         listFiles = fileOperation.listFiles(path, context);
-
-        for (String pathToFile:listFiles) {
-            File file = new File(pathToFile);
-            if(file.canRead() && file.exists()){
-                if(file.isFile()){
-                    mFilesList.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.file));
-                }else{
-                    mPathsList.add(new FileModel(file.getName(),df.format(file.lastModified()), pathToFile, R.drawable.path));
+        for (File pathToFile : listFiles) {
+            File file = new File(pathToFile.getAbsolutePath());
+            if (file.canRead() && file.exists()) {
+                if (file.isFile()) {
+                    filesList.add(file);
+                } else {
+                    pathsList.add(file);
                 }
             }
         }
-
-        Collections.sort(mPathsList,  new Comparator<FileModel>(){
+        Collections.sort(pathsList, new Comparator<File>() {
             @Override
-            public int compare(FileModel lhs, FileModel rhs) {
-                return lhs.getNameFile().compareTo(rhs.getNameFile());
+            public int compare(File lhs, File rhs) {
+                return lhs.getName().compareTo(rhs.getName());
             }
         });
-        Collections.sort(mFilesList,  new Comparator<FileModel>(){
+        Collections.sort(filesList, new Comparator<File>() {
             @Override
-            public int compare(FileModel lhs, FileModel rhs) {
-                return lhs.getNameFile().compareTo(rhs.getNameFile());
+            public int compare(File lhs, File rhs) {
+                return lhs.getName().compareTo(rhs.getName());
             }
         });
-        List<FileModel> mFileModel = new ArrayList<>(mPathsList);
-        mFileModel.addAll(mFilesList);
-        return mFileModel;
+        List<File> fileModelList = new ArrayList<>(pathsList);
+        fileModelList.addAll(filesList);
+        return fileModelList;
     }
 
+    public static ArrayList<File> loadPath(String path, Context context) {
+        File file = new File(path);
+        if (!file.isDirectory()) {
+            return null;
+        }
+        FileOperation fileOperation = new FileOperation();
+        return new ArrayList<>(fileOperation.fileModelLoad(path, context));
+    }
 
-    public FileExploreAdapter loadPath(String path, Context context){
-        FileExploreAdapter mFileExploreAdapter;
-        if((new File(path).isDirectory())){
-
-            List<FileModel> fileModel = new ArrayList<>();
-            if (!path.equals(pathMain)){
-                fileModel.add(0, new FileModel("...", "", pathMain, 0));
+    public static void openFile(final Context context, final File target) {
+        final String fileType = TypeFiles.getFileType(target);
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Uri contentUri = FileProvider.getUriForFile(context,
+                BuildConfig.APPLICATION_ID + ".fileprovider", target);
+        intent.setDataAndType(contentUri, fileType);
+        if (fileType != null && !fileType.equals("*/*")) {
+            intent.setDataAndType(contentUri, fileType);
+            if (context.getPackageManager().queryIntentActivities(intent, 0).isEmpty()) {
+                Toast.makeText(context, R.string.cantopenfile, Toast.LENGTH_SHORT).show();
+                return;
             }
-            FileOperation fileOperation = new FileOperation();
-            fileModel.addAll(fileOperation.fileModelLoad(path, context));
-            Settings.updatePreferences(context);
-            mFileExploreAdapter = new FileExploreAdapter(context, R.layout.current_item_file, fileModel);
-            return mFileExploreAdapter;
-
-        }return null;
+            context.startActivity(intent);
+        }
     }
 }
