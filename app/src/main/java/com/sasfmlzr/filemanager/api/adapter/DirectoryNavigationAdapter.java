@@ -15,20 +15,8 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
     private List<String> dataset;
     private static NavigationItemClickListener navListener;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        final TextView textView;
-
-        public ViewHolder(final View view, NavigationItemClickListener listener) {
-            super(view);
-            navListener = listener;
-            textView = view.findViewById(R.id.path_navigation);
-            textView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            navListener.navItemClicked(v, getAdapterPosition());
-        }
+    public interface NavigationItemClickListener {
+        void navItemClicked(View view, int pos);
     }
 
     public DirectoryNavigationAdapter(List<String> directory,
@@ -56,7 +44,20 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
         return dataset.size();
     }
 
-    public interface NavigationItemClickListener {
-        void navItemClicked(View view, int pos);
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        final TextView textView;
+
+        ViewHolder(final View view, NavigationItemClickListener listener) {
+            super(view);
+            navListener = listener;
+            textView = view.findViewById(R.id.path_navigation);
+            textView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            navListener.navItemClicked(v, getAdapterPosition());
+        }
     }
 }

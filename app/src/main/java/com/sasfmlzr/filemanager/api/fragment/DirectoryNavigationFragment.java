@@ -85,6 +85,5 @@ public class DirectoryNavigationFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        void onDirectoryNavigation(String currentPath);
     }
 }
