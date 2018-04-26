@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
@@ -51,12 +52,17 @@ public class DirectoryNavigationFragment extends Fragment {
         recyclerView = view.findViewById(R.id.navigation_recycler_view);
         layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
+
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 LinearLayoutManager.HORIZONTAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
+
+        DirectoryNavigationAdapter.NavigationItemClickListener listener = (view, position) -> {
+            Toast.makeText(view.getContext(), " " + position, Toast.LENGTH_SHORT).show();
+        };
         //TODO: ask FileSystems.getDefault().getSeparator()
         List<String> strings = Arrays.asList(currentPath.split("/"));
-        adapter = new DirectoryNavigationAdapter(strings);
+        adapter = new DirectoryNavigationAdapter(strings, listener);
         recyclerView.setAdapter(adapter);
         return view;
     }

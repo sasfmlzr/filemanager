@@ -9,20 +9,31 @@ import android.widget.TextView;
 import com.sasfmlzr.filemanager.R;
 
 import java.util.List;
+
 //TODO: convert currentPath string to File
 public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNavigationAdapter.ViewHolder> {
     private List<String> dataset;
+    private static NavigationItemClickListener navListener;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final TextView textView;
 
-        public ViewHolder(View view) {
+        public ViewHolder(final View view, NavigationItemClickListener listener) {
             super(view);
+            navListener = listener;
             textView = view.findViewById(R.id.path_navigation);
+            textView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            navListener.navItemClicked(v, getAdapterPosition());
         }
     }
 
-    public DirectoryNavigationAdapter(List<String> directory) {
+    public DirectoryNavigationAdapter(List<String> directory,
+                                      NavigationItemClickListener navigationListener) {
+        navListener = navigationListener;
         dataset = directory;
     }
 
@@ -31,7 +42,7 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
                                                                     int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.directory_navigation, parent, false);
-        ViewHolder vh = new ViewHolder(view);
+        ViewHolder vh = new ViewHolder(view, navListener);
         return vh;
     }
 
@@ -43,5 +54,9 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
     @Override
     public int getItemCount() {
         return dataset.size();
+    }
+
+    public interface NavigationItemClickListener {
+        void navItemClicked(View view, int pos);
     }
 }
