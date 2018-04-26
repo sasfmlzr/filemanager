@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
 
     public void callBackStackFragments() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 0) {
+        if (fragmentManager.getBackStackEntryCount() > 1) {
             fragmentManager.popBackStack();
             fragmentManager.popBackStack();
         } else {
