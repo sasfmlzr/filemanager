@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
+            fragmentManager.popBackStack();
         } else {
             finish();
         }
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity
             transaction.add(R.id.directory_navigation, fragment);
         } else {
             transaction.replace(R.id.directory_navigation, fragment);
+            transaction.addToBackStack(currentPath);
         }
         transaction.commit();
     }
