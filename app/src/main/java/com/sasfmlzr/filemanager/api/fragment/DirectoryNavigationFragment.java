@@ -63,6 +63,7 @@ public class DirectoryNavigationFragment extends Fragment {
         //TODO: ask FileSystems.getDefault().getSeparator()
         List<String> strings = Arrays.asList(currentPath.split("/"));
         adapter = new DirectoryNavigationAdapter(strings, listener);
+        recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
         recyclerView.setAdapter(adapter);
         return view;
     }
