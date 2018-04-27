@@ -44,6 +44,25 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         return fragment;
     }
 
+    public void requestReadPermissions() {
+        if (ContextCompat.checkSelfPermission(getActivity().getLayoutInflater()
+                .getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getActivity().getLayoutInflater().getContext(), R.string.permission_is_not_granted,
+                    Toast.LENGTH_SHORT).show();
+            requestPermissions(
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_CODE_READ_EXTERNAL_STORAGE);
+        }
+    }
+
+    private void setAdapter(File path) {
+        List<File> fileList = FileOperation.loadPath(path, view.getContext());
+        FileExploreAdapter fileExploreAdapter = new FileExploreAdapter(view.getContext(),
+                R.layout.current_item_file, fileList);
+        fileListView.setAdapter(fileExploreAdapter);
+    }
+
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
@@ -65,17 +84,6 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         return view;
     }
 
-    public void requestReadPermissions() {
-        if (ContextCompat.checkSelfPermission(getActivity().getLayoutInflater()
-                .getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(getActivity().getLayoutInflater().getContext(), R.string.permission_is_not_granted,
-                    Toast.LENGTH_SHORT).show();
-            requestPermissions(
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    PERMISSION_CODE_READ_EXTERNAL_STORAGE);
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -90,13 +98,6 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
                 Toast.makeText(view.getContext(), this.getString(R.string.allow_permission), Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    private void setAdapter(File path) {
-        List<File> fileList = FileOperation.loadPath(path, view.getContext());
-        FileExploreAdapter fileExploreAdapter = new FileExploreAdapter(view.getContext(),
-                R.layout.current_item_file, fileList);
-        fileListView.setAdapter(fileExploreAdapter);
     }
 
     @Override

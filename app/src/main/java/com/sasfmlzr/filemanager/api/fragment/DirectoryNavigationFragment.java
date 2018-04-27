@@ -30,6 +30,8 @@ public class DirectoryNavigationFragment extends Fragment {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
+    public interface OnFragmentInteractionListener {
+    }
 
     public static DirectoryNavigationFragment newInstance(String currentPath) {
         DirectoryNavigationFragment fragment = new DirectoryNavigationFragment();
@@ -86,8 +88,5 @@ public class DirectoryNavigationFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         listener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
     }
 }
