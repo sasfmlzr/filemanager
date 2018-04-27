@@ -19,21 +19,20 @@ import java.util.Comparator;
 import java.util.List;
 
 public class FileOperation {
-    private List<File> listFiles(String path, Context context) {
+    private List<File> listFiles(File path, Context context) {
         ArrayList<File> listFiles = new ArrayList<>();
-        final File file = new File(path);
         if (!listFiles.isEmpty()) {
             listFiles.clear();
         }
-        if (file.exists() && file.canRead()) {
-            listFiles.addAll(Arrays.asList(file.listFiles()));
+        if (path.exists() && path.canRead()) {
+            listFiles.addAll(Arrays.asList(path.listFiles()));
         } else {
             Toast.makeText(context, context.getString(R.string.cant_read_folder), Toast.LENGTH_SHORT).show();
         }
         return listFiles;
     }
 
-    private List<File> fileModelLoad(String path, Context context) {
+    private List<File> fileModelLoad(File path, Context context) {
         List<File> filesList = new ArrayList<>();
         List<File> pathsList = new ArrayList<>();
         List<File> listFiles;
@@ -66,9 +65,8 @@ public class FileOperation {
         return fileModelList;
     }
 
-    public static ArrayList<File> loadPath(String path, Context context) {
-        File file = new File(path);
-        if (!file.isDirectory()) {
+    public static ArrayList<File> loadPath(File path, Context context) {
+        if (!path.isDirectory()) {
             return null;
         }
         FileOperation fileOperation = new FileOperation();

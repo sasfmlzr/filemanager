@@ -21,13 +21,14 @@ import com.sasfmlzr.filemanager.api.file.FileOperation;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 public class FileViewFragment extends Fragment implements AdapterView.OnItemClickListener {
     protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
     private static final int PERMISSION_CODE_READ_EXTERNAL_STORAGE = 0;
 
     private ListView fileListView;
-    private String currentPath;
+    private File currentFile;
     private View view;
     private OnFragmentInteractionListener listener;
 
@@ -47,7 +48,8 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         if (getArguments() != null) {
-            currentPath = getArguments().getString(BUNDLE_ARGS_CURRENT_PATH);
+            currentFile = new File(Objects.requireNonNull
+                    (getArguments().getString(BUNDLE_ARGS_CURRENT_PATH)));
         }
     }
 
@@ -58,7 +60,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         view = inflater.inflate(R.layout.fragment_file_view, container, false);
         fileListView = view.findViewById(R.id.fileList);
         requestReadPermissions();
-        setAdapter(currentPath);
+        setAdapter(currentFile);
         fileListView.setOnItemClickListener(this);
         return view;
     }
@@ -82,7 +84,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         if (requestCode == 0) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setAdapter(currentPath);
+                setAdapter(currentFile);
             } else {
                 requestReadPermissions();
                 Toast.makeText(view.getContext(), this.getString(R.string.allow_permission), Toast.LENGTH_SHORT).show();
@@ -90,7 +92,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         }
     }
 
-    private void setAdapter(String path) {
+    private void setAdapter(File path) {
         List<File> fileList = FileOperation.loadPath(path, view.getContext());
         FileExploreAdapter fileExploreAdapter = new FileExploreAdapter(view.getContext(),
                 R.layout.current_item_file, fileList);
