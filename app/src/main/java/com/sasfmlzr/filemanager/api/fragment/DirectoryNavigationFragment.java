@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
@@ -27,6 +26,7 @@ public class DirectoryNavigationFragment extends Fragment {
     private OnFragmentInteractionListener listener;
 
     public interface OnFragmentInteractionListener {
+        void onDirectorySelected(File currentFile);
     }
 
     public static DirectoryNavigationFragment newInstance(File file) {
@@ -59,11 +59,11 @@ public class DirectoryNavigationFragment extends Fragment {
                 (recyclerView.getContext(), LinearLayoutManager.HORIZONTAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        DirectoryNavigationAdapter.NavigationItemClickListener listener = (v, position) -> {
-            Toast.makeText(v.getContext(), " " + position, Toast.LENGTH_SHORT).show();
+        DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (v, file) -> {
+            listener.onDirectorySelected(file);
         };
         List<File> files = getParentsFile(currentFile);
-        RecyclerView.Adapter adapter = new DirectoryNavigationAdapter(files, listener);
+        RecyclerView.Adapter adapter = new DirectoryNavigationAdapter(files, navigationListener);
         recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
         recyclerView.setAdapter(adapter);
         return view;

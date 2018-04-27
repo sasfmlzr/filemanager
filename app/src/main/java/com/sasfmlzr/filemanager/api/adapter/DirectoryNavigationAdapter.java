@@ -16,7 +16,7 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
     private static NavigationItemClickListener navListener;
 
     public interface NavigationItemClickListener {
-        void navItemClicked(View view, int pos);
+        void navItemClicked(View view, File file);
     }
 
     public DirectoryNavigationAdapter(List<File> directory,
@@ -56,7 +56,7 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
 
         @Override
         public void onClick(View v) {
-            navListener.navItemClicked(v, getAdapterPosition());
+            navListener.navItemClicked(v, dataset.get(getAdapterPosition()));
         }
     }
 }
