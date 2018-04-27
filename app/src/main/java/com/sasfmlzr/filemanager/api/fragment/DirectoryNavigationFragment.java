@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class DirectoryNavigationFragment extends Fragment {
-    protected static final String STRING_CURRENT_PATH = "currentPath";
+    protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
 
-    private File currentPath;
+    private File currentFile;
     private View view;
     private OnFragmentInteractionListener listener;
 
@@ -34,7 +34,7 @@ public class DirectoryNavigationFragment extends Fragment {
     public static DirectoryNavigationFragment newInstance(String currentPath) {
         DirectoryNavigationFragment fragment = new DirectoryNavigationFragment();
         Bundle args = new Bundle();
-        args.putString(STRING_CURRENT_PATH, currentPath);
+        args.putString(BUNDLE_ARGS_CURRENT_PATH, currentPath);
         fragment.setArguments(args);
         return fragment;
     }
@@ -43,8 +43,8 @@ public class DirectoryNavigationFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            currentPath = new File(Objects.requireNonNull
-                    (getArguments().getString(STRING_CURRENT_PATH)));
+            currentFile = new File(Objects.requireNonNull
+                    (getArguments().getString(BUNDLE_ARGS_CURRENT_PATH)));
         }
     }
 
@@ -64,7 +64,7 @@ public class DirectoryNavigationFragment extends Fragment {
         DirectoryNavigationAdapter.NavigationItemClickListener listener = (view, position) -> {
             Toast.makeText(view.getContext(), " " + position, Toast.LENGTH_SHORT).show();
         };
-        List<String> strings = Arrays.asList(currentPath.getAbsolutePath().split("/"));
+        List<String> strings = Arrays.asList(currentFile.getAbsolutePath().split("/"));
         adapter = new DirectoryNavigationAdapter(strings, listener);
         recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
         recyclerView.setAdapter(adapter);
