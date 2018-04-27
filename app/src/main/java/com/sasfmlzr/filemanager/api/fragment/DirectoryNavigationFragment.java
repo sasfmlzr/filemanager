@@ -24,12 +24,7 @@ public class DirectoryNavigationFragment extends Fragment {
     protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
 
     private File currentFile;
-    private View view;
     private OnFragmentInteractionListener listener;
-
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
 
     public interface OnFragmentInteractionListener {
     }
@@ -54,9 +49,9 @@ public class DirectoryNavigationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_directory_navigation, container, false);
-        recyclerView = view.findViewById(R.id.navigation_recycler_view);
-        layoutManager = new LinearLayoutManager(view.getContext(),
+        View view = inflater.inflate(R.layout.fragment_directory_navigation, container, false);
+        RecyclerView recyclerView = view.findViewById(R.id.navigation_recycler_view);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(),
                 LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -64,11 +59,11 @@ public class DirectoryNavigationFragment extends Fragment {
                 (recyclerView.getContext(), LinearLayoutManager.HORIZONTAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        DirectoryNavigationAdapter.NavigationItemClickListener listener = (view, position) -> {
-            Toast.makeText(view.getContext(), " " + position, Toast.LENGTH_SHORT).show();
+        DirectoryNavigationAdapter.NavigationItemClickListener listener = (v, position) -> {
+            Toast.makeText(v.getContext(), " " + position, Toast.LENGTH_SHORT).show();
         };
         List<File> files = getParentsFile(currentFile);
-        adapter = new DirectoryNavigationAdapter(files, listener);
+        RecyclerView.Adapter adapter = new DirectoryNavigationAdapter(files, listener);
         recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
         recyclerView.setAdapter(adapter);
         return view;
