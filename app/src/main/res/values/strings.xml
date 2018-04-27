@@ -5,4 +5,5 @@
     <string name="allow_permission">Please allow permissions</string>
     <string name="cantopenfile">Cannot open this file</string>
     <string name="exception_OnArticleSelectedListener">must implement OnArticleSelectedListener</string>
+    <string name="exception_OnFragmentInteractionListener">must implement OnFragmentInteractionListener</string>
 </resources>

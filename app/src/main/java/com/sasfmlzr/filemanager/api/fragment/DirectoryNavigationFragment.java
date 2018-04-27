@@ -78,7 +78,7 @@ public class DirectoryNavigationFragment extends Fragment {
             listener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " " + R.string.exception_OnFragmentInteractionListener);
         }
     }
 
