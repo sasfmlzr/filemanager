@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity
     protected static final File DEFAULT_PATH = Environment
             .getExternalStorageDirectory();
 
-    private File currentFile;
     private boolean firstFragment = true;
 
     public void callBackStackFragments() {
@@ -88,8 +87,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDirectorySelected(File currentFile) {
         createFileViewFragment(currentFile);
-        this.currentFile = currentFile;
-        createDirectoryNavigationFragment(this.currentFile);
+        createDirectoryNavigationFragment(currentFile);
     }
 
     @Override
