@@ -8,14 +8,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.sasfmlzr.filemanager.api.fragment.DirectoryNavigationFragment;
 import com.sasfmlzr.filemanager.api.fragment.FileViewFragment;
 
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity
-        implements FileViewFragment.OnFragmentInteractionListener,
-        DirectoryNavigationFragment.OnFragmentInteractionListener {
+        implements FileViewFragment.OnFragmentInteractionListener {
 
     protected static final File DEFAULT_PATH = Environment
             .getExternalStorageDirectory();
@@ -24,8 +22,7 @@ public class MainActivity extends AppCompatActivity
 
     public void callBackStackFragments() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 1) {
-            fragmentManager.popBackStack();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
         } else {
             finish();
@@ -47,20 +44,6 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
-    public void createDirectoryNavigationFragment(File currentFile) {
-        String absolutePath = currentFile.getAbsolutePath();
-        DirectoryNavigationFragment fragment = DirectoryNavigationFragment.newInstance(currentFile);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if (firstFragment) {
-            transaction.add(R.id.directory_navigation, fragment);
-        } else {
-            transaction.replace(R.id.directory_navigation, fragment);
-            transaction.addToBackStack(absolutePath);
-        }
-        transaction.commit();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +54,6 @@ public class MainActivity extends AppCompatActivity
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         createFileViewFragment(DEFAULT_PATH);
-        createDirectoryNavigationFragment(DEFAULT_PATH);
     }
 
     @Override
@@ -87,12 +69,5 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDirectorySelected(File currentFile) {
         createFileViewFragment(currentFile);
-        createDirectoryNavigationFragment(currentFile);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        super.onBackPressed();
     }
 }

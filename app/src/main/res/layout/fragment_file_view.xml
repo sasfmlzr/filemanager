@@ -4,11 +4,23 @@
     android:id="@+id/fragment_file_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:baselineAligned="false">
+    android:baselineAligned="false"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/navigation_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/directory_navigation_height"
+        android:layout_gravity="top"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:scrollbars="horizontal">
+
+    </android.support.v7.widget.RecyclerView>
 
     <ListView
         android:id="@+id/fileList"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="top"
         android:layout_weight="1"

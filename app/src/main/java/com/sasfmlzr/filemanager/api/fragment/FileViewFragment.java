@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +19,15 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.sasfmlzr.filemanager.R;
+import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
 
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+
+import static com.sasfmlzr.filemanager.api.file.FileOperation.getParentsFile;
 
 public class FileViewFragment extends Fragment implements AdapterView.OnItemClickListener {
     protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
@@ -81,6 +87,24 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         requestReadPermissions();
         setAdapter(currentFile);
         fileListView.setOnItemClickListener(this);
+
+        RecyclerView recyclerView = view.findViewById(R.id.navigation_recycler_view);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration
+                (recyclerView.getContext(), LinearLayoutManager.HORIZONTAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (v, file) -> {
+            listener.onDirectorySelected(file);
+        };
+        List<File> files = getParentsFile(currentFile);
+        RecyclerView.Adapter adapter = new DirectoryNavigationAdapter(files, navigationListener);
+        recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
+        recyclerView.setAdapter(adapter);
+
         return view;
     }
 
@@ -119,7 +143,13 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
             listener = (OnFragmentInteractionListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " " +
-                    R.string.exception_OnArticleSelectedListener);
+                    R.string.exception_OnFragmentInteractionListener);
         }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
     }
 }
