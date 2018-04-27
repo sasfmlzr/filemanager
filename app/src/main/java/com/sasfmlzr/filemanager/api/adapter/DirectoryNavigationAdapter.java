@@ -36,7 +36,7 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.textView.setText(dataset.get(position).getAbsolutePath());
+        holder.textView.setText(dataset.get(position).getName());
     }
 
     @Override
