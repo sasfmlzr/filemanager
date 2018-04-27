@@ -14,13 +14,15 @@ import android.widget.Toast;
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class DirectoryNavigationFragment extends Fragment {
     protected static final String STRING_CURRENT_PATH = "currentPath";
 
-    private String currentPath;
+    private File currentPath;
     private View view;
     private OnFragmentInteractionListener listener;
 
@@ -41,7 +43,8 @@ public class DirectoryNavigationFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            currentPath = getArguments().getString(STRING_CURRENT_PATH);
+            currentPath = new File(Objects.requireNonNull
+                    (getArguments().getString(STRING_CURRENT_PATH)));
         }
     }
 
@@ -50,18 +53,18 @@ public class DirectoryNavigationFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_directory_navigation, container, false);
         recyclerView = view.findViewById(R.id.navigation_recycler_view);
-        layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false);
+        layoutManager = new LinearLayoutManager(view.getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                LinearLayoutManager.HORIZONTAL);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration
+                (recyclerView.getContext(), LinearLayoutManager.HORIZONTAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         DirectoryNavigationAdapter.NavigationItemClickListener listener = (view, position) -> {
             Toast.makeText(view.getContext(), " " + position, Toast.LENGTH_SHORT).show();
         };
-        //TODO: ask FileSystems.getDefault().getSeparator()
-        List<String> strings = Arrays.asList(currentPath.split("/"));
+        List<String> strings = Arrays.asList(currentPath.getAbsolutePath().split("/"));
         adapter = new DirectoryNavigationAdapter(strings, listener);
         recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
         recyclerView.setAdapter(adapter);
