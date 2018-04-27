@@ -33,10 +33,10 @@ public class DirectoryNavigationFragment extends Fragment {
     public interface OnFragmentInteractionListener {
     }
 
-    public static DirectoryNavigationFragment newInstance(String currentPath) {
+    public static DirectoryNavigationFragment newInstance(File file) {
         DirectoryNavigationFragment fragment = new DirectoryNavigationFragment();
         Bundle args = new Bundle();
-        args.putString(BUNDLE_ARGS_CURRENT_PATH, currentPath);
+        args.putString(BUNDLE_ARGS_CURRENT_PATH, file.getAbsolutePath());
         fragment.setArguments(args);
         return fragment;
     }

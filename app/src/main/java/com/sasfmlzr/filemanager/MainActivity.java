@@ -11,22 +11,67 @@ import android.view.MenuItem;
 import com.sasfmlzr.filemanager.api.fragment.DirectoryNavigationFragment;
 import com.sasfmlzr.filemanager.api.fragment.FileViewFragment;
 
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity
         implements FileViewFragment.OnFragmentInteractionListener,
         DirectoryNavigationFragment.OnFragmentInteractionListener {
-    protected static final String DEFAULT_PATH = Environment
+
+    protected static final File DEFAULT_PATH = new File(Environment
             .getExternalStorageDirectory()
-            .getAbsolutePath();
-    private String currentPath;
+            .getAbsolutePath());
+
+    private File currentFile;
     private boolean firstFragment = true;
+
+    public void callBackStackFragments() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 1) {
+            fragmentManager.popBackStack();
+            fragmentManager.popBackStack();
+        } else {
+            finish();
+        }
+    }
+
+    public void createFileViewFragment(File currentFile) {
+        String absolutePath = currentFile.getAbsolutePath();
+        FileViewFragment fragment = FileViewFragment.newInstance(currentFile);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if (firstFragment) {
+            transaction.add(R.id.fileviewonactivity, fragment, absolutePath);
+            firstFragment = false;
+        } else {
+            transaction.replace(R.id.fileviewonactivity, fragment, absolutePath);
+            transaction.addToBackStack(absolutePath);
+        }
+        transaction.commit();
+    }
+
+    public void createDirectoryNavigationFragment(File currentFile) {
+        String absolutePath = currentFile.getAbsolutePath();
+        DirectoryNavigationFragment fragment = DirectoryNavigationFragment.newInstance(currentFile);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if (firstFragment) {
+            transaction.add(R.id.directory_navigation, fragment);
+        } else {
+            transaction.replace(R.id.directory_navigation, fragment);
+            transaction.addToBackStack(absolutePath);
+        }
+        transaction.commit();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+
         createFileViewFragment(DEFAULT_PATH);
         createDirectoryNavigationFragment(DEFAULT_PATH);
     }
@@ -41,47 +86,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void callBackStackFragments() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 1) {
-            fragmentManager.popBackStack();
-            fragmentManager.popBackStack();
-        } else {
-            finish();
-        }
-    }
-
-    public void createFileViewFragment(String currentPath) {
-        FileViewFragment fragment = FileViewFragment.newInstance(currentPath);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if (firstFragment) {
-            transaction.add(R.id.fileviewonactivity, fragment, currentPath);
-            firstFragment = false;
-        } else {
-            transaction.replace(R.id.fileviewonactivity, fragment, currentPath);
-            transaction.addToBackStack(currentPath);
-        }
-        transaction.commit();
-    }
-
-    public void createDirectoryNavigationFragment(String currentPath) {
-        DirectoryNavigationFragment fragment = DirectoryNavigationFragment.newInstance(currentPath);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if (firstFragment) {
-            transaction.add(R.id.directory_navigation, fragment);
-        } else {
-            transaction.replace(R.id.directory_navigation, fragment);
-            transaction.addToBackStack(currentPath);
-        }
-        transaction.commit();
-    }
-
     @Override
-    public void onDirectorySelected(String currentPath) {
-        createFileViewFragment(currentPath);
-        this.currentPath = currentPath;
-        createDirectoryNavigationFragment(currentPath);
+    public void onDirectorySelected(File currentFile) {
+        createFileViewFragment(this.currentFile);
+        this.currentFile = currentFile;
+        createDirectoryNavigationFragment(this.currentFile);
     }
 }

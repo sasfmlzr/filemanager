@@ -33,13 +33,13 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     private OnFragmentInteractionListener listener;
 
     public interface OnFragmentInteractionListener {
-        void onDirectorySelected(String currentPath);
+        void onDirectorySelected(File currentFile);
     }
 
-    public static FileViewFragment newInstance(final String content) {
+    public static FileViewFragment newInstance(final File file) {
         Bundle args = new Bundle();
         FileViewFragment fragment = new FileViewFragment();
-        args.putString(BUNDLE_ARGS_CURRENT_PATH, content);
+        args.putString(BUNDLE_ARGS_CURRENT_PATH, file.getAbsolutePath());
         fragment.setArguments(args);
         return fragment;
     }
@@ -105,7 +105,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         File file = (File) parent.getItemAtPosition(position);
         if (file.exists()) {
             if (file.isDirectory()) {
-                listener.onDirectorySelected(file.getAbsolutePath());
+                listener.onDirectorySelected(file);
             } else if (file.isFile()) {
                 FileOperation.openFile(view.getContext(), file);
             }
