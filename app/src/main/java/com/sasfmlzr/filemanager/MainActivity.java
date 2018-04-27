@@ -17,9 +17,8 @@ public class MainActivity extends AppCompatActivity
         implements FileViewFragment.OnFragmentInteractionListener,
         DirectoryNavigationFragment.OnFragmentInteractionListener {
 
-    protected static final File DEFAULT_PATH = new File(Environment
-            .getExternalStorageDirectory()
-            .getAbsolutePath());
+    protected static final File DEFAULT_PATH = Environment
+            .getExternalStorageDirectory();
 
     private File currentFile;
     private boolean firstFragment = true;
@@ -88,8 +87,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDirectorySelected(File currentFile) {
-        createFileViewFragment(this.currentFile);
+        createFileViewFragment(currentFile);
         this.currentFile = currentFile;
         createDirectoryNavigationFragment(this.currentFile);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        super.onBackPressed();
     }
 }
