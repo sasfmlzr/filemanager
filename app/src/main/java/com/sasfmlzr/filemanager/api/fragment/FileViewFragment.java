@@ -23,8 +23,8 @@ import java.io.File;
 import java.util.List;
 
 public class FileViewFragment extends Fragment implements AdapterView.OnItemClickListener {
-    protected static final String STRING_CURRENT_PATH = "currentPath";
-    private static final int READ_EXTERNAL_STORAGE = 0;
+    protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
+    private static final int PERMISSION_CODE_READ_EXTERNAL_STORAGE = 0;
 
     private ListView fileListView;
     private String currentPath;
@@ -38,7 +38,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     public static FileViewFragment newInstance(final String content) {
         Bundle args = new Bundle();
         FileViewFragment fragment = new FileViewFragment();
-        args.putString(STRING_CURRENT_PATH, content);
+        args.putString(BUNDLE_ARGS_CURRENT_PATH, content);
         fragment.setArguments(args);
         return fragment;
     }
@@ -47,7 +47,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         if (getArguments() != null) {
-            currentPath = getArguments().getString(STRING_CURRENT_PATH);
+            currentPath = getArguments().getString(BUNDLE_ARGS_CURRENT_PATH);
         }
     }
 
@@ -71,7 +71,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
                     Toast.LENGTH_SHORT).show();
             requestPermissions(
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    READ_EXTERNAL_STORAGE);
+                    PERMISSION_CODE_READ_EXTERNAL_STORAGE);
         }
     }
 
