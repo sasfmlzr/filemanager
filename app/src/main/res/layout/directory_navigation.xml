@@ -11,5 +11,5 @@
         android:layout_height="@dimen/directory_navigation_height"
         android:gravity="center_vertical"
         android:maxLines="1"
-        android:textSize="16sp" />
+        android:textSize="18sp" />
 </LinearLayout>
