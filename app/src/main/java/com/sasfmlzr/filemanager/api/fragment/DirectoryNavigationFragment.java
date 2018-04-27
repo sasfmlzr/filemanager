@@ -15,9 +15,10 @@ import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
+import static com.sasfmlzr.filemanager.api.file.FileOperation.getParentsFile;
 
 public class DirectoryNavigationFragment extends Fragment {
     protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
@@ -66,8 +67,8 @@ public class DirectoryNavigationFragment extends Fragment {
         DirectoryNavigationAdapter.NavigationItemClickListener listener = (view, position) -> {
             Toast.makeText(view.getContext(), " " + position, Toast.LENGTH_SHORT).show();
         };
-        List<String> strings = Arrays.asList(currentFile.getAbsolutePath().split("/"));
-        adapter = new DirectoryNavigationAdapter(strings, listener);
+        List<File> files = getParentsFile(currentFile);
+        adapter = new DirectoryNavigationAdapter(files, listener);
         recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
         recyclerView.setAdapter(adapter);
         return view;

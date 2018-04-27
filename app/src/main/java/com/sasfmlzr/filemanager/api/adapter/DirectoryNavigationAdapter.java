@@ -8,18 +8,18 @@ import android.widget.TextView;
 
 import com.sasfmlzr.filemanager.R;
 
+import java.io.File;
 import java.util.List;
 
-//TODO: convert currentPath string to File
 public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNavigationAdapter.ViewHolder> {
-    private List<String> dataset;
+    private List<File> dataset;
     private static NavigationItemClickListener navListener;
 
     public interface NavigationItemClickListener {
         void navItemClicked(View view, int pos);
     }
 
-    public DirectoryNavigationAdapter(List<String> directory,
+    public DirectoryNavigationAdapter(List<File> directory,
                                       NavigationItemClickListener navigationListener) {
         navListener = navigationListener;
         dataset = directory;
@@ -36,14 +36,13 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.textView.setText(dataset.get(position));
+        holder.textView.setText(dataset.get(position).getAbsolutePath());
     }
 
     @Override
     public int getItemCount() {
         return dataset.size();
     }
-
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final TextView textView;
