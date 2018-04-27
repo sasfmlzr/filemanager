@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,8 +55,8 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         if (ContextCompat.checkSelfPermission(getActivity().getLayoutInflater()
                 .getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(getActivity().getLayoutInflater().getContext(), R.string.permission_is_not_granted,
-                    Toast.LENGTH_SHORT).show();
+            /*Toast.makeText(getActivity().getLayoutInflater().getContext(), R.string.permission_is_not_granted,
+                    Toast.LENGTH_SHORT).show();*/
             requestPermissions(
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     PERMISSION_CODE_READ_EXTERNAL_STORAGE);
@@ -82,6 +83,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        Log.d("blablabla", "onCreateView()");
         view = inflater.inflate(R.layout.fragment_file_view, container, false);
         fileListView = view.findViewById(R.id.fileList);
         requestReadPermissions();
@@ -118,7 +120,6 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setAdapter(currentFile);
             } else {
-                requestReadPermissions();
                 Toast.makeText(view.getContext(), this.getString(R.string.allow_permission), Toast.LENGTH_SHORT).show();
             }
         }
