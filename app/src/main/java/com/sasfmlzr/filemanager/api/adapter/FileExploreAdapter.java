@@ -1,6 +1,7 @@
 package com.sasfmlzr.filemanager.api.adapter;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sasfmlzr.filemanager.R;
+import com.sasfmlzr.filemanager.api.other.FileUtils;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -27,6 +29,7 @@ public class FileExploreAdapter extends ArrayAdapter<File> {
         super(context, resource, fileModels);
         this.context = context;
         this.fileModels = fileModels;
+
     }
 
     @NonNull
@@ -45,7 +48,33 @@ public class FileExploreAdapter extends ArrayAdapter<File> {
         }
         File fileModel = fileModels.get(position);
         viewHolder.dateView.setText(df.format(fileModel.lastModified()));
-        viewHolder.bottomView.setText(fileModel.getAbsolutePath());
+        if (viewHolder.asyncTask != null) {
+            viewHolder.asyncTask.cancel(false);
+        }
+        if (viewHolder.sizeItemView.getText() == "") {
+            viewHolder.sizeItemView.setText("...");
+        }
+        viewHolder.asyncTask = new AsyncTask<File, Void, String>() {
+            @Override
+            protected String doInBackground(File... files) {
+                String size;
+                if (!files[0].canRead()) {
+                    return null;
+                }
+                if (files[0].isFile()) {
+                    size = FileUtils.formatCalculatedSize(files[0].length());
+                } else {
+                    size = FileUtils.formatCalculatedSize(FileUtils.getDirectorySize(files[0]));
+                }
+                return size;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                viewHolder.sizeItemView.setText(s);
+                super.onPostExecute(s);
+            }
+        }.execute(fileModel);
         viewHolder.nameView.setText(fileModel.getName());
         if (fileModel.isFile()) {
             viewHolder.imageView.setImageResource(R.drawable.file);
@@ -56,13 +85,14 @@ public class FileExploreAdapter extends ArrayAdapter<File> {
     }
 
     private class ViewHolder {
-        final TextView nameView, bottomView, dateView;
+        final TextView nameView, sizeItemView, dateView;
         final ImageView imageView;
+        AsyncTask asyncTask;
 
         ViewHolder(View view) {
             imageView = view.findViewById(R.id.icon_file);
             nameView = view.findViewById(R.id.file_name_view);
-            bottomView = view.findViewById(R.id.bottom_view);
+            sizeItemView = view.findViewById(R.id.size_item);
             dateView = view.findViewById(R.id.date_view);
         }
     }

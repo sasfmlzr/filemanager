@@ -50,13 +50,12 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/bottom_view"
+                    android:id="@+id/size_item"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right|center_vertical"
                     android:maxLines="3"
-                    android:text="TextView"
                     android:textSize="12sp"
                     tools:layout_editor_absoluteX="306dp"
                     tools:layout_editor_absoluteY="33dp" />

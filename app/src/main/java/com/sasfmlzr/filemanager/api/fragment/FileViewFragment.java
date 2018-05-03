@@ -54,8 +54,6 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         if (ContextCompat.checkSelfPermission(getActivity().getLayoutInflater()
                 .getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            /*Toast.makeText(getActivity().getLayoutInflater().getContext(), R.string.permission_is_not_granted,
-                    Toast.LENGTH_SHORT).show();*/
             requestPermissions(
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     PERMISSION_CODE_READ_EXTERNAL_STORAGE);
