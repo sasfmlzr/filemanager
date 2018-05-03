@@ -36,9 +36,9 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     private ListView fileListView;
     private File currentFile;
     private View view;
-    private OnFragmentInteractionListener listener;
+    private OnDirectorySelectedListener listener;
 
-    public interface OnFragmentInteractionListener {
+    public interface OnDirectorySelectedListener {
         void onDirectorySelected(File currentFile);
     }
 
@@ -107,7 +107,6 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         return view;
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[],
@@ -138,7 +137,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (OnFragmentInteractionListener) getParentFragment();
+            listener = (OnDirectorySelectedListener) getParentFragment();
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " " +
                     R.string.exception_OnFragmentInteractionListener);

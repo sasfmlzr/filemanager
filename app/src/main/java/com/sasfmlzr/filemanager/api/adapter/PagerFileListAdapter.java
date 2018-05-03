@@ -1,8 +1,12 @@
 package com.sasfmlzr.filemanager.api.adapter;
+
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +16,7 @@ public class PagerFileListAdapter extends FragmentPagerAdapter {
     private final List<Fragment> fragmentList = new ArrayList<>();
     private FragmentManager fragmentManager;
     private Context context;
+    private static final String KEY_FRAGMENT = "fragment";
 
     public PagerFileListAdapter(FragmentManager fragmentManager, Context context) {
         super(fragmentManager);
@@ -21,6 +26,7 @@ public class PagerFileListAdapter extends FragmentPagerAdapter {
 
     public void addFragment(Fragment fragment) {
         fragmentList.add(fragment);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -42,4 +48,37 @@ public class PagerFileListAdapter extends FragmentPagerAdapter {
         }
     }
 
+    @Override
+    public Parcelable saveState() {
+        Bundle state = new Bundle();
+        int i = 0;
+        for (Fragment fragment : fragmentList) {
+            int itemId = i++;
+            String bundleKey = KEY_FRAGMENT + itemId;
+            if (fragment.isAdded())
+                fragmentManager.putFragment(state, bundleKey, fragment);
+        }
+        return state;
+    }
+
+    @Override
+    public void restoreState(Parcelable state, ClassLoader loader) {
+        if (state != null) {
+            Bundle bundle = (Bundle) state;
+            bundle.setClassLoader(loader);
+
+            Iterable<String> keys = bundle.keySet();
+            for (String key : keys) {
+                if (key.startsWith(KEY_FRAGMENT)) {
+                    Fragment f = fragmentManager.getFragment(bundle, key);
+                    if (f != null) {
+                        //f.setMenuVisibility(false);
+                        addFragment(f);
+                    } else {
+                        Log.w("PagerFileListAdapter", "Bad fragment at key " + key);
+                    }
+                }
+            }
+        }
+    }
 }

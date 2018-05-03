@@ -11,7 +11,7 @@ import com.sasfmlzr.filemanager.R;
 import java.io.File;
 import java.util.Objects;
 
-public class EmptyPagerFragment extends Fragment implements FileViewFragment.OnFragmentInteractionListener {
+public class EmptyPagerFragment extends Fragment implements FileViewFragment.OnDirectorySelectedListener {
     protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
     private File currentFile;
     private boolean firstFragment = true;
