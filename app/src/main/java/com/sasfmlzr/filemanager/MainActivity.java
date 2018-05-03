@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity implements
         FragmentManager fragmentManager = getSupportFragmentManager();
         String absolutePath = currentFile.getAbsolutePath();
         EmptyPagerFragment fragment = EmptyPagerFragment.newInstance(currentFile);
-        ;
-
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.child_fragment_container, fragment, absolutePath);
         transaction.addToBackStack(absolutePath);
