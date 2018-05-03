@@ -2,7 +2,6 @@ package com.sasfmlzr.filemanager.api.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,7 @@ import java.util.Objects;
 public class EmptyPagerFragment extends Fragment implements FileViewFragment.OnFragmentInteractionListener {
     protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
     private File currentFile;
-
+    private boolean firstFragment = true;
 
     public static EmptyPagerFragment newInstance(final File file) {
         Bundle args = new Bundle();
@@ -28,9 +27,13 @@ public class EmptyPagerFragment extends Fragment implements FileViewFragment.OnF
     public void replaceChildFragment(File currentFile) {
         Fragment childFragment = FileViewFragment.newInstance(currentFile);
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.child_fragment_container, childFragment)
-                .addToBackStack(null)
-                .commit();
+        transaction.replace(R.id.child_fragment_container, childFragment);
+        if (!firstFragment) {
+            transaction.addToBackStack(null);
+        } else {
+            firstFragment = false;
+        }
+        transaction.commit();
     }
 
     @Override
@@ -53,11 +56,8 @@ public class EmptyPagerFragment extends Fragment implements FileViewFragment.OnF
         replaceChildFragment(currentFile);
     }
 
-    String TAG = "DEBUGTAG";
-
     @Override
     public void onDirectorySelected(File currentFile) {
-        Log.d(TAG, "onDirectorySelected() called with: currentFile = [" + currentFile + "]");
         replaceChildFragment(currentFile);
     }
 }
