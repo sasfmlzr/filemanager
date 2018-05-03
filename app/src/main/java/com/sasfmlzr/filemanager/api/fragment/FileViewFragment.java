@@ -139,7 +139,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (OnFragmentInteractionListener) context;
+            listener = (OnFragmentInteractionListener) getParentFragment();
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " " +
                     R.string.exception_OnFragmentInteractionListener);

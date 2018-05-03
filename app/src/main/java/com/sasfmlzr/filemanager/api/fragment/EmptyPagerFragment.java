@@ -1,9 +1,8 @@
 package com.sasfmlzr.filemanager.api.fragment;
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +12,10 @@ import com.sasfmlzr.filemanager.R;
 import java.io.File;
 import java.util.Objects;
 
-public class EmptyPagerFragment extends Fragment {
-    private OnFragmentInteractionListener listener;
+public class EmptyPagerFragment extends Fragment implements FileViewFragment.OnFragmentInteractionListener {
     protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
-    protected static final File DEFAULT_PATH = Environment
-            .getExternalStorageDirectory();
     private File currentFile;
+
 
     public static EmptyPagerFragment newInstance(final File file) {
         Bundle args = new Bundle();
@@ -26,6 +23,14 @@ public class EmptyPagerFragment extends Fragment {
         args.putString(BUNDLE_ARGS_CURRENT_PATH, file.getAbsolutePath());
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void replaceChildFragment(File currentFile) {
+        Fragment childFragment = FileViewFragment.newInstance(currentFile);
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(R.id.child_fragment_container, childFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -48,31 +53,11 @@ public class EmptyPagerFragment extends Fragment {
         replaceChildFragment(currentFile);
     }
 
-    public void replaceChildFragment(File currentFile) {
-        Fragment childFragment = FileViewFragment.newInstance(currentFile);
-
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.child_fragment_container, childFragment).commit();
-    }
+    String TAG = "DEBUGTAG";
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            listener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + R.string.exception_OnFragmentInteractionListener);
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onEmptyFragmentSelected(File currentFile);
+    public void onDirectorySelected(File currentFile) {
+        Log.d(TAG, "onDirectorySelected() called with: currentFile = [" + currentFile + "]");
+        replaceChildFragment(currentFile);
     }
 }

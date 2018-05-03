@@ -2,23 +2,19 @@ package com.sasfmlzr.filemanager;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.sasfmlzr.filemanager.api.adapter.PagerFileListAdapter;
 import com.sasfmlzr.filemanager.api.fragment.EmptyPagerFragment;
-import com.sasfmlzr.filemanager.api.fragment.FileViewFragment;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity implements
-        FileViewFragment.OnFragmentInteractionListener,
-        EmptyPagerFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity {
 
     protected static final File DEFAULT_PATH = Environment
             .getExternalStorageDirectory();
@@ -55,34 +51,25 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            //callBackStackFragments();
+            callBackStackFragments();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
     }
 
-
-    public void replaceChildFragment(File currentFile) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        String absolutePath = currentFile.getAbsolutePath();
-        EmptyPagerFragment fragment = EmptyPagerFragment.newInstance(currentFile);
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.child_fragment_container, fragment, absolutePath);
-        transaction.addToBackStack(absolutePath);
-        transaction.commit();
-    }
-
-    String TAG = "DEBUGTAG";
-
     @Override
-    public void onDirectorySelected(File currentFile) {
-        Log.d(TAG, "onDirectorySelected() called with: currentFile = [" + currentFile + "]");
-        replaceChildFragment(currentFile);
-    }
-
-    @Override
-    public void onEmptyFragmentSelected(File currentFile) {
-        Log.d(TAG, "onEmptyFragmentSelected() called with: currentFile = [" + currentFile + "]");
+    public void onBackPressed() {
+        FragmentManager fm = getSupportFragmentManager();
+        for (Fragment frag : fm.getFragments()) {
+            if (frag.isVisible()) {
+                FragmentManager childFm = frag.getChildFragmentManager();
+                if (childFm.getBackStackEntryCount() > 0) {
+                    childFm.popBackStack();
+                    return;
+                }
+            }
+        }
+        super.onBackPressed();
     }
 }
