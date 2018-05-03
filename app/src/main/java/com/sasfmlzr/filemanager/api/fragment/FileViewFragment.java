@@ -11,7 +11,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,7 +82,6 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        Log.d("blablabla", "onCreateView()");
         view = inflater.inflate(R.layout.fragment_file_view, container, false);
         fileListView = view.findViewById(R.id.fileList);
         requestReadPermissions();
