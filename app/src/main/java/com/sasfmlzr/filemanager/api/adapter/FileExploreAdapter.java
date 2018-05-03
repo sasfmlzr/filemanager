@@ -54,27 +54,27 @@ public class FileExploreAdapter extends ArrayAdapter<File> {
         if (viewHolder.sizeItemView.getText() == "") {
             viewHolder.sizeItemView.setText("...");
         }
-        viewHolder.asyncTask = new AsyncTask<File, Void, String>() {
-            @Override
-            protected String doInBackground(File... files) {
-                String size;
-                if (!files[0].canRead()) {
-                    return null;
-                }
-                if (files[0].isFile()) {
-                    size = FileUtils.formatCalculatedSize(files[0].length());
-                } else {
+        if (fileModel.isFile()) {
+            FileUtils.formatCalculatedSize(fileModel.length());
+        } else {
+            viewHolder.asyncTask = new AsyncTask<File, Void, String>() {
+                @Override
+                protected String doInBackground(File... files) {
+                    String size;
+                    if (!files[0].canRead()) {
+                        return null;
+                    }
                     size = FileUtils.formatCalculatedSize(FileUtils.getDirectorySize(files[0]));
+                    return size;
                 }
-                return size;
-            }
 
-            @Override
-            protected void onPostExecute(String s) {
-                viewHolder.sizeItemView.setText(s);
-                super.onPostExecute(s);
-            }
-        }.execute(fileModel);
+                @Override
+                protected void onPostExecute(String s) {
+                    viewHolder.sizeItemView.setText(s);
+                    super.onPostExecute(s);
+                }
+            }.execute(fileModel);
+        }
         viewHolder.nameView.setText(fileModel.getName());
         if (fileModel.isFile()) {
             viewHolder.imageView.setImageResource(R.drawable.file);

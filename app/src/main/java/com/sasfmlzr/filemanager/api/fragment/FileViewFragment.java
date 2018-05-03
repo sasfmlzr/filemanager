@@ -80,6 +80,7 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        setRetainInstance(true);
         view = inflater.inflate(R.layout.fragment_file_view, container, false);
         fileListView = view.findViewById(R.id.fileList);
         requestReadPermissions();

@@ -32,4 +32,14 @@ public class PagerFileListAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return fragmentList.size();
     }
+
+    @Override
+    public float getPageWidth(int position) {
+        if (context.getResources().getConfiguration().orientation == 1) {
+            return 1f;
+        } else {
+            return 0.5f;
+        }
+    }
+
 }

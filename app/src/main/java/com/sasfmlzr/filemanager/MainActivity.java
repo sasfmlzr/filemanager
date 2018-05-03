@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.sasfmlzr.filemanager.api.adapter.PagerFileListAdapter;
@@ -20,11 +21,20 @@ public class MainActivity extends AppCompatActivity {
             .getExternalStorageDirectory();
 
     private ViewPager viewPager;
+    private static int firstLaunch = 0;
 
     public void addTabs(ViewPager viewPager) {
         PagerFileListAdapter adapter = new PagerFileListAdapter(getSupportFragmentManager(), getApplicationContext());
-        adapter.addFragment(EmptyPagerFragment.newInstance(DEFAULT_PATH));
-        adapter.addFragment(EmptyPagerFragment.newInstance(DEFAULT_PATH));
+        if (firstLaunch == 0) {
+            adapter.addFragment(EmptyPagerFragment.newInstance(DEFAULT_PATH));
+            adapter.addFragment(EmptyPagerFragment.newInstance(DEFAULT_PATH));
+            firstLaunch = 1;
+            Log.d("DDD", "true");
+        } else {
+            //adapter.addFragment(EmptyPagerFragment.newInstance(DEFAULT_PATH));
+            //adapter.addFragment(EmptyPagerFragment.newInstance(DEFAULT_PATH));
+            Log.d("DDD", "else");
+        }
         viewPager.setAdapter(adapter);
     }
 
@@ -32,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (savedInstanceState != null) {
+            firstLaunch = savedInstanceState.getInt("firstLaunch");
+        }
         viewPager = findViewById(R.id.pager);
         addTabs(viewPager);
         ActionBar actionBar = getSupportActionBar();
@@ -62,5 +75,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("firstLaunch", firstLaunch);
     }
 }
