@@ -17,6 +17,7 @@ public class PagerFileListAdapter extends FragmentPagerAdapter {
     private FragmentManager fragmentManager;
     private Context context;
     private static final String KEY_FRAGMENT = "fragment";
+    private static final String TAG = "PagerFileListAdapter";
 
     public PagerFileListAdapter(FragmentManager fragmentManager, Context context) {
         super(fragmentManager);
@@ -52,7 +53,7 @@ public class PagerFileListAdapter extends FragmentPagerAdapter {
     public Parcelable saveState() {
         Bundle state = new Bundle();
         int i = 0;
-        for (Fragment fragment : fragmentList) {
+        for (Fragment fragment : fragmentManager.getFragments()) {
             int itemId = i++;
             String bundleKey = KEY_FRAGMENT + itemId;
             if (fragment.isAdded())
@@ -75,7 +76,7 @@ public class PagerFileListAdapter extends FragmentPagerAdapter {
                         //f.setMenuVisibility(false);
                         addFragment(f);
                     } else {
-                        Log.w("PagerFileListAdapter", "Bad fragment at key " + key);
+                        Log.w(TAG, "Bad fragment at key " + key);
                     }
                 }
             }

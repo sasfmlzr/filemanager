@@ -1,4 +1,5 @@
 package com.sasfmlzr.filemanager.api.fragment;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -26,6 +27,7 @@ public class EmptyPagerFragment extends Fragment implements FileViewFragment.OnD
 
     public void replaceChildFragment(File currentFile) {
         Fragment childFragment = FileViewFragment.newInstance(currentFile);
+        this.currentFile = currentFile;
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.child_fragment_container, childFragment);
         if (!firstFragment) {
