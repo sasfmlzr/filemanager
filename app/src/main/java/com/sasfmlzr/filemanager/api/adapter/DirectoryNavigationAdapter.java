@@ -2,7 +2,6 @@ package com.sasfmlzr.filemanager.api.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +35,7 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.textView.setText(dataset.get(position).getName());
     }
 

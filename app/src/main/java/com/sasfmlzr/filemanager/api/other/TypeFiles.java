@@ -13,7 +13,7 @@ public class TypeFiles {
         }
         String type = null;
         final String extension = getExtension(file.getName());
-        if (extension != null && !extension.isEmpty()) {
+        if (!extension.isEmpty()) {
             final String extensionLowerCase = extension.toLowerCase(Locale.getDefault());
             final MimeTypeMap mime = MimeTypeMap.getSingleton();
             type = mime.getMimeTypeFromExtension(extensionLowerCase);

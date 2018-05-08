@@ -14,7 +14,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class FileOperation {
@@ -47,18 +46,8 @@ public class FileOperation {
                 }
             }
         }
-        Collections.sort(pathsList, new Comparator<File>() {
-            @Override
-            public int compare(File lhs, File rhs) {
-                return lhs.getName().compareTo(rhs.getName());
-            }
-        });
-        Collections.sort(filesList, new Comparator<File>() {
-            @Override
-            public int compare(File lhs, File rhs) {
-                return lhs.getName().compareTo(rhs.getName());
-            }
-        });
+        Collections.sort(pathsList, (lhs, rhs) -> lhs.getName().compareTo(rhs.getName()));
+        Collections.sort(filesList, (lhs, rhs) -> lhs.getName().compareTo(rhs.getName()));
         List<File> fileModelList = new ArrayList<>(pathsList);
         fileModelList.addAll(filesList);
         return fileModelList;
