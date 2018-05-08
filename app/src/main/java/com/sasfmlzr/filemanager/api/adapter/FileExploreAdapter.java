@@ -44,7 +44,6 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         File fileModel = fileModels.get(position);
         holder.dateView.setText(df.format(fileModel.lastModified()));
 
-
         if (holder.sizeItemView.getText() == "") {
             holder.sizeItemView.setText("...");
             if (fileModel.isFile()) {
@@ -76,7 +75,6 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         } else if (fileModel.isDirectory()) {
             holder.imageView.setImageResource(R.drawable.path);
         }
-
     }
 
     @Override

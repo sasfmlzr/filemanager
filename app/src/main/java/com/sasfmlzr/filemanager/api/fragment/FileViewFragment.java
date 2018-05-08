@@ -28,13 +28,14 @@ import java.util.Objects;
 import static com.sasfmlzr.filemanager.api.file.FileOperation.getParentsFile;
 
 public class FileViewFragment extends Fragment {
-    protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
+    private static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
     private static final int PERMISSION_CODE_READ_EXTERNAL_STORAGE = 0;
 
     private RecyclerView fileListView;
     private File currentFile;
     private View view;
     private OnDirectorySelectedListener listener;
+
     private FileExploreAdapter.PathItemClickListener pathListener = (file) -> {
         if (file.exists()) {
             if (file.isDirectory()) {
@@ -44,6 +45,9 @@ public class FileViewFragment extends Fragment {
             }
         }
     };
+
+    private DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (file) ->
+            listener.onDirectorySelected(file);
 
     public interface OnDirectorySelectedListener {
         void onDirectorySelected(File currentFile);
@@ -58,7 +62,8 @@ public class FileViewFragment extends Fragment {
     }
 
     public void requestReadPermissions() {
-        if (ContextCompat.checkSelfPermission(getActivity().getLayoutInflater()
+        if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity())
+                .getLayoutInflater()
                 .getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(
@@ -74,6 +79,29 @@ public class FileViewFragment extends Fragment {
         fileListView.setAdapter(fileExploreAdapter);
     }
 
+    private void loadListDirectory() {
+        fileListView = view.findViewById(R.id.fileList);
+        RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
+        fileListView.setLayoutManager(layoutManagerPathView);
+        setAdapter(currentFile, pathListener);
+    }
+
+    private void loadDirectoryNavigation() {
+        RecyclerView recyclerView = view.findViewById(R.id.navigation_recycler_view);
+        RecyclerView.LayoutManager layoutManagerRecView = new LinearLayoutManager(view.getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManagerRecView);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration
+                (recyclerView.getContext(), LinearLayoutManager.HORIZONTAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        List<File> files = getParentsFile(currentFile);
+        RecyclerView.Adapter adapter = new DirectoryNavigationAdapter(files, navigationListener);
+        recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
+        recyclerView.setAdapter(adapter);
+    }
+
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
@@ -87,38 +115,18 @@ public class FileViewFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        setRetainInstance(true);
         view = inflater.inflate(R.layout.fragment_file_view, container, false);
 
-        fileListView = view.findViewById(R.id.fileList);
-        RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
-        fileListView.setLayoutManager(layoutManagerPathView);
+        loadListDirectory();
         requestReadPermissions();
-        setAdapter(currentFile, pathListener);
-
-        RecyclerView recyclerView = view.findViewById(R.id.navigation_recycler_view);
-        RecyclerView.LayoutManager layoutManagerRecView = new LinearLayoutManager(view.getContext(),
-                LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(layoutManagerRecView);
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration
-                (recyclerView.getContext(), LinearLayoutManager.HORIZONTAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-
-        DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (file) ->
-                listener.onDirectorySelected(file);
-        List<File> files = getParentsFile(currentFile);
-        RecyclerView.Adapter adapter = new DirectoryNavigationAdapter(files, navigationListener);
-        recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
-        recyclerView.setAdapter(adapter);
-
+        loadDirectoryNavigation();
         return view;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[],
-                                           int[] grantResults) {
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         if (requestCode == 0) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
