@@ -1,6 +1,8 @@
 package com.sasfmlzr.filemanager.api.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +18,7 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
     private static NavigationItemClickListener navListener;
 
     public interface NavigationItemClickListener {
-        void navItemClicked(View view, File file);
+        void navItemClicked(File file);
     }
 
     public DirectoryNavigationAdapter(List<File> directory,
@@ -25,13 +27,12 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
         dataset = directory;
     }
 
+    @NonNull
     @Override
-    public DirectoryNavigationAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                    int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.directory_navigation, parent, false);
-        ViewHolder vh = new ViewHolder(view, navListener);
-        return vh;
+        return new ViewHolder(view, navListener);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
 
         @Override
         public void onClick(View v) {
-            navListener.navItemClicked(v, dataset.get(getAdapterPosition()));
+            navListener.navItemClicked(dataset.get(getAdapterPosition()));
         }
     }
 }

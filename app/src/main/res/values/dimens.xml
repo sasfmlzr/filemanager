@@ -2,7 +2,7 @@
 <resources>
 
     <!-- list item height -->
-    <dimen name="item_height">60dp</dimen>
+    <dimen name="item_height">80dp</dimen>
     <dimen name="directory_navigation_height">60dp</dimen>
 
 </resources>

@@ -14,8 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.sasfmlzr.filemanager.R;
@@ -29,14 +27,23 @@ import java.util.Objects;
 
 import static com.sasfmlzr.filemanager.api.file.FileOperation.getParentsFile;
 
-public class FileViewFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class FileViewFragment extends Fragment {
     protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
     private static final int PERMISSION_CODE_READ_EXTERNAL_STORAGE = 0;
 
-    private ListView fileListView;
+    private RecyclerView fileListView;
     private File currentFile;
     private View view;
     private OnDirectorySelectedListener listener;
+    private FileExploreAdapter.PathItemClickListener pathListener = (file) -> {
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                listener.onDirectorySelected(file);
+            } else if (file.isFile()) {
+                FileOperation.openFile(view.getContext(), file);
+            }
+        }
+    };
 
     public interface OnDirectorySelectedListener {
         void onDirectorySelected(File currentFile);
@@ -60,10 +67,10 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         }
     }
 
-    private void setAdapter(File path) {
+    private void setAdapter(File path, FileExploreAdapter.PathItemClickListener listener) {
         List<File> fileList = FileOperation.loadPath(path, view.getContext());
-        FileExploreAdapter fileExploreAdapter = new FileExploreAdapter(view.getContext(),
-                R.layout.current_item_file, fileList);
+
+        RecyclerView.Adapter fileExploreAdapter = new FileExploreAdapter(fileList, listener);
         fileListView.setAdapter(fileExploreAdapter);
     }
 
@@ -82,23 +89,24 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
                              @Nullable Bundle savedInstanceState) {
         setRetainInstance(true);
         view = inflater.inflate(R.layout.fragment_file_view, container, false);
+
         fileListView = view.findViewById(R.id.fileList);
+        RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
+        fileListView.setLayoutManager(layoutManagerPathView);
         requestReadPermissions();
-        setAdapter(currentFile);
-        fileListView.setOnItemClickListener(this);
+        setAdapter(currentFile, pathListener);
 
         RecyclerView recyclerView = view.findViewById(R.id.navigation_recycler_view);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(),
+        RecyclerView.LayoutManager layoutManagerRecView = new LinearLayoutManager(view.getContext(),
                 LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setLayoutManager(layoutManagerRecView);
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration
                 (recyclerView.getContext(), LinearLayoutManager.HORIZONTAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (v, file) -> {
-            listener.onDirectorySelected(file);
-        };
+        DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (file) ->
+                listener.onDirectorySelected(file);
         List<File> files = getParentsFile(currentFile);
         RecyclerView.Adapter adapter = new DirectoryNavigationAdapter(files, navigationListener);
         recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
@@ -114,21 +122,9 @@ public class FileViewFragment extends Fragment implements AdapterView.OnItemClic
         if (requestCode == 0) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setAdapter(currentFile);
+                setAdapter(currentFile, pathListener);
             } else {
                 Toast.makeText(view.getContext(), this.getString(R.string.allow_permission), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-        File file = (File) parent.getItemAtPosition(position);
-        if (file.exists()) {
-            if (file.isDirectory()) {
-                listener.onDirectorySelected(file);
-            } else if (file.isFile()) {
-                FileOperation.openFile(view.getContext(), file);
             }
         }
     }

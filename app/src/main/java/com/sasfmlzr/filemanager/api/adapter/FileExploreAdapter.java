@@ -1,12 +1,10 @@
 package com.sasfmlzr.filemanager.api.adapter;
 
-import android.content.Context;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,82 +16,91 @@ import java.text.DateFormat;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * File exlore to work properly listview
- */
-public class FileExploreAdapter extends ArrayAdapter<File> {
-    private final Context context;
+public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.ViewHolder> {
     private List<File> fileModels;
+    private static PathItemClickListener pathListener;
 
-    public FileExploreAdapter(Context context, int resource, List<File> fileModels) {
-        super(context, resource, fileModels);
-        this.context = context;
-        this.fileModels = fileModels;
+    public interface PathItemClickListener {
+        void pathClicked(File file);
+    }
 
+    public FileExploreAdapter(List<File> files, PathItemClickListener listener) {
+        fileModels = files;
+        pathListener = listener;
     }
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        final LayoutInflater inflater = LayoutInflater.from(context);
-        final ViewHolder viewHolder;
-        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
-                DateFormat.SHORT, Locale.getDefault());
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.current_item_file, parent, false);
-            viewHolder = new ViewHolder(convertView);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-        File fileModel = fileModels.get(position);
-        viewHolder.dateView.setText(df.format(fileModel.lastModified()));
-        if (viewHolder.asyncTask != null) {
-            viewHolder.asyncTask.cancel(false);
-        }
-        if (viewHolder.sizeItemView.getText() == "") {
-            viewHolder.sizeItemView.setText("...");
-        }
-        if (fileModel.isFile()) {
-            FileUtils.formatCalculatedSize(fileModel.length());
-        } else {
-            viewHolder.asyncTask = new AsyncTask<File, Void, String>() {
-                @Override
-                protected String doInBackground(File... files) {
-                    String size;
-                    if (!files[0].canRead()) {
-                        return null;
-                    }
-                    size = FileUtils.formatCalculatedSize(FileUtils.getDirectorySize(files[0]));
-                    return size;
-                }
-
-                @Override
-                protected void onPostExecute(String s) {
-                    viewHolder.sizeItemView.setText(s);
-                    super.onPostExecute(s);
-                }
-            }.execute(fileModel);
-        }
-        viewHolder.nameView.setText(fileModel.getName());
-        if (fileModel.isFile()) {
-            viewHolder.imageView.setImageResource(R.drawable.file);
-        } else if (fileModel.isDirectory()) {
-            viewHolder.imageView.setImageResource(R.drawable.path);
-        }
-        return convertView;
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.current_item_file, parent, false);
+        return new ViewHolder(view, pathListener);
     }
 
-    private class ViewHolder {
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        final DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
+                DateFormat.SHORT, Locale.getDefault());
+        File fileModel = fileModels.get(position);
+        holder.dateView.setText(df.format(fileModel.lastModified()));
+
+
+        if (holder.sizeItemView.getText() == "") {
+            holder.sizeItemView.setText("...");
+            if (fileModel.isFile()) {
+                FileUtils.formatCalculatedSize(fileModel.length());
+            } else {
+               /* AsyncTask asyncTask = new AsyncTask<File, Void, String>() {
+                    @Override
+                    protected String doInBackground(File... files) {
+                        String size;
+                        if (!files[0].canRead()) {
+                            return null;
+                        }
+                        holder.sizeItemView.setText(getStatus().toString());
+                        size = FileUtils.formatCalculatedSize(FileUtils.getDirectorySize(files[0]));
+                        return size;
+                    }
+
+                    @Override
+                    protected void onPostExecute(String s) {
+                        holder.sizeItemView.setText(s);
+                        super.onPostExecute(s);
+                    }
+                }.execute(fileModel);*/
+            }
+        }
+        holder.nameView.setText(fileModel.getName());
+        if (fileModel.isFile()) {
+            holder.imageView.setImageResource(R.drawable.file);
+        } else if (fileModel.isDirectory()) {
+            holder.imageView.setImageResource(R.drawable.path);
+        }
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return fileModels.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final TextView nameView, sizeItemView, dateView;
         final ImageView imageView;
-        AsyncTask asyncTask;
 
-        ViewHolder(View view) {
-            imageView = view.findViewById(R.id.icon_file);
-            nameView = view.findViewById(R.id.file_name_view);
-            sizeItemView = view.findViewById(R.id.size_item);
-            dateView = view.findViewById(R.id.date_view);
+        ViewHolder(View view, PathItemClickListener listener) {
+            super(view);
+            pathListener = listener;
+            imageView = itemView.findViewById(R.id.icon_file);
+            nameView = itemView.findViewById(R.id.file_name_view);
+            sizeItemView = itemView.findViewById(R.id.size_item);
+            dateView = itemView.findViewById(R.id.date_view);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            pathListener.pathClicked(fileModels.get(getAdapterPosition()));
         }
     }
 }
