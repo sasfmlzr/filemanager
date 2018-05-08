@@ -1,20 +1,16 @@
 package com.sasfmlzr.filemanager.api.fragment;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
@@ -29,7 +25,6 @@ import static com.sasfmlzr.filemanager.api.file.FileOperation.getParentsFile;
 
 public class FileViewFragment extends Fragment {
     private static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
-    private static final int PERMISSION_CODE_READ_EXTERNAL_STORAGE = 0;
 
     private RecyclerView fileListView;
     private File currentFile;
@@ -61,16 +56,6 @@ public class FileViewFragment extends Fragment {
         return fragment;
     }
 
-    public void requestReadPermissions() {
-        if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity())
-                .getLayoutInflater()
-                .getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    PERMISSION_CODE_READ_EXTERNAL_STORAGE);
-        }
-    }
 
     private void setAdapter(File path, FileExploreAdapter.PathItemClickListener listener) {
         List<File> fileList = FileOperation.loadPath(path, view.getContext());
@@ -118,23 +103,8 @@ public class FileViewFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_file_view, container, false);
 
         loadListDirectory();
-        requestReadPermissions();
         loadDirectoryNavigation();
         return view;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        if (requestCode == 0) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setAdapter(currentFile, pathListener);
-            } else {
-                Toast.makeText(view.getContext(), this.getString(R.string.allow_permission), Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     @Override
