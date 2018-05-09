@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,5 +82,11 @@ public class PagerFileListAdapter extends FragmentPagerAdapter {
                 }
             }
         }
+    }
+
+    @Override
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        Log.d(TAG, "position = [" + position + "], object = [" + object + "]");
+        super.setPrimaryItem(container, position, object);
     }
 }
