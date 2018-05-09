@@ -6,4 +6,7 @@
     <string name="cantopenfile">Cannot open this file</string>
     <string name="exception_OnArticleSelectedListener">must implement OnArticleSelectedListener</string>
     <string name="exception_OnFragmentInteractionListener">must implement OnFragmentInteractionListener</string>
+    <string name="datefile">Date</string>
+    <string name="namefile">NameFile</string>
+    <string name="iconfile">iconFile</string>
 </resources>
