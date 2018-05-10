@@ -14,7 +14,7 @@ import java.util.List;
 
 public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNavigationAdapter.ViewHolder> {
     private List<File> dataset;
-    private static NavigationItemClickListener navListener;
+    private NavigationItemClickListener navListener;
 
     public interface NavigationItemClickListener {
         void navItemClicked(File file);

@@ -18,7 +18,7 @@ import java.util.Locale;
 
 public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.ViewHolder> {
     private List<File> fileModels;
-    private static PathItemClickListener pathListener;
+    private PathItemClickListener pathListener;
 
     public interface PathItemClickListener {
         void pathClicked(File file);
