@@ -34,10 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         requestReadPermissions();
         loadViewPager();
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        loadActionBar();
     }
 
     @Override
@@ -93,5 +90,12 @@ public class MainActivity extends AppCompatActivity {
         PagerFileListAdapter adapter = new PagerFileListAdapter(getSupportFragmentManager(), getApplicationContext());
         adapter.setFiles(files);
         viewPager.setAdapter(adapter);
+    }
+
+    public void loadActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 }

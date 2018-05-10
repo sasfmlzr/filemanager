@@ -31,62 +31,6 @@ public class FileViewFragment extends Fragment {
     private View view;
     private OnDirectorySelectedListener listener;
 
-    private FileExploreAdapter.PathItemClickListener pathListener = (file) -> {
-        if (file.exists()) {
-            if (file.isDirectory()) {
-                listener.onDirectorySelected(file);
-            } else if (file.isFile()) {
-                FileOperation.openFile(view.getContext(), file);
-            }
-        }
-    };
-
-    private DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (file) ->
-            listener.onDirectorySelected(file);
-
-    public interface OnDirectorySelectedListener {
-        void onDirectorySelected(File currentFile);
-    }
-
-    public static FileViewFragment newInstance(final File file) {
-        Bundle args = new Bundle();
-        FileViewFragment fragment = new FileViewFragment();
-        args.putString(BUNDLE_ARGS_CURRENT_PATH, file.getAbsolutePath());
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-
-    private void setAdapter(File path, FileExploreAdapter.PathItemClickListener listener) {
-        List<File> fileList = FileOperation.loadPath(path, view.getContext());
-
-        RecyclerView.Adapter fileExploreAdapter = new FileExploreAdapter(fileList, listener);
-        fileListView.setAdapter(fileExploreAdapter);
-    }
-
-    private void loadListDirectory() {
-        fileListView = view.findViewById(R.id.fileList);
-        RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
-        fileListView.setLayoutManager(layoutManagerPathView);
-        setAdapter(currentFile, pathListener);
-    }
-
-    private void loadDirectoryNavigation() {
-        RecyclerView recyclerView = view.findViewById(R.id.navigation_recycler_view);
-        RecyclerView.LayoutManager layoutManagerRecView = new LinearLayoutManager(view.getContext(),
-                LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(layoutManagerRecView);
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration
-                (recyclerView.getContext(), LinearLayoutManager.HORIZONTAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-
-        List<File> files = getParentsFile(currentFile);
-        RecyclerView.Adapter adapter = new DirectoryNavigationAdapter(files, navigationListener);
-        recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
-        recyclerView.setAdapter(adapter);
-    }
-
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
@@ -122,5 +66,60 @@ public class FileViewFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         listener = null;
+    }
+
+    public static FileViewFragment newInstance(final File file) {
+        Bundle args = new Bundle();
+        FileViewFragment fragment = new FileViewFragment();
+        args.putString(BUNDLE_ARGS_CURRENT_PATH, file.getAbsolutePath());
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private FileExploreAdapter.PathItemClickListener pathListener = (file) -> {
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                listener.onDirectorySelected(file);
+            } else if (file.isFile()) {
+                FileOperation.openFile(view.getContext(), file);
+            }
+        }
+    };
+
+    private DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (file) ->
+            listener.onDirectorySelected(file);
+
+    public interface OnDirectorySelectedListener {
+        void onDirectorySelected(File currentFile);
+    }
+
+    private void setAdapter(File path, FileExploreAdapter.PathItemClickListener listener) {
+        List<File> fileList = FileOperation.loadPath(path, view.getContext());
+
+        RecyclerView.Adapter fileExploreAdapter = new FileExploreAdapter(fileList, listener);
+        fileListView.setAdapter(fileExploreAdapter);
+    }
+
+    private void loadListDirectory() {
+        fileListView = view.findViewById(R.id.fileList);
+        RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
+        fileListView.setLayoutManager(layoutManagerPathView);
+        setAdapter(currentFile, pathListener);
+    }
+
+    private void loadDirectoryNavigation() {
+        RecyclerView recyclerView = view.findViewById(R.id.navigation_recycler_view);
+        RecyclerView.LayoutManager layoutManagerRecView = new LinearLayoutManager(view.getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManagerRecView);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration
+                (recyclerView.getContext(), LinearLayoutManager.HORIZONTAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        List<File> files = getParentsFile(currentFile);
+        RecyclerView.Adapter adapter = new DirectoryNavigationAdapter(files, navigationListener);
+        recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
+        recyclerView.setAdapter(adapter);
     }
 }
