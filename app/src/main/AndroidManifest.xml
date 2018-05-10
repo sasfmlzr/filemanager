@@ -25,6 +25,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+        <provider
+            android:authorities="com.sasfmlzr.filemanager.provider"
+            android:name="com.sasfmlzr.filemanager.api.provider.CacheSizeProvider"
+            android:exported="false"/>
     </application>
 </manifest>
-
