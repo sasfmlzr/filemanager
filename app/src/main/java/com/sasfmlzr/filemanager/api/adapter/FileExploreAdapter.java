@@ -14,8 +14,11 @@ import com.sasfmlzr.filemanager.api.other.FileUtils;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import static com.sasfmlzr.filemanager.MainActivity.sqlDatabase;
 
 public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.ViewHolder> {
     private List<File> fileModels;
@@ -47,13 +50,20 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
 
         if (holder.sizeItemView.getText() == "") {
             holder.sizeItemView.setText("...");
+            HashMap<String, String> sizeDirectory = sqlDatabase.databaseRequest().selectCacheSizeDirectory();
+            String sizeFile = null;
+            if (!sizeDirectory.isEmpty()) {
+                sizeFile = sizeDirectory.get(fileModel.getAbsolutePath());
+                holder.sizeItemView.setText(sizeFile);
+            }
             if (fileModel.isFile()) {
                 holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
-            } else {
-                AsyncTask asyncTask = new AsyncRunnable(){
+            } else if (sizeFile == null) {
+                AsyncTask asyncTask = new AsyncRunnable() {
                     @Override
                     protected void onPostExecute(String s) {
                         holder.sizeItemView.setText(s);
+                        sqlDatabase.databaseRequest().insertCacheSizeDirectory(fileModel.getAbsolutePath(), s);
                         super.onPostExecute(s);
                     }
                 }.execute(fileModel);
