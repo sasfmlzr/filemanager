@@ -1,5 +1,6 @@
 package com.sasfmlzr.filemanager.api.adapter;
 
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -47,26 +48,15 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         if (holder.sizeItemView.getText() == "") {
             holder.sizeItemView.setText("...");
             if (fileModel.isFile()) {
-                FileUtils.formatCalculatedSize(fileModel.length());
+                holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
             } else {
-               /* AsyncTask asyncTask = new AsyncTask<File, Void, String>() {
-                    @Override
-                    protected String doInBackground(File... files) {
-                        String size;
-                        if (!files[0].canRead()) {
-                            return null;
-                        }
-                        holder.sizeItemView.setText(getStatus().toString());
-                        size = FileUtils.formatCalculatedSize(FileUtils.getDirectorySize(files[0]));
-                        return size;
-                    }
-
+                AsyncTask asyncTask = new AsyncRunnable(){
                     @Override
                     protected void onPostExecute(String s) {
                         holder.sizeItemView.setText(s);
                         super.onPostExecute(s);
                     }
-                }.execute(fileModel);*/
+                }.execute(fileModel);
             }
         }
         holder.nameView.setText(fileModel.getName());
@@ -99,6 +89,18 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         @Override
         public void onClick(View v) {
             pathListener.pathClicked(fileModels.get(getAdapterPosition()));
+        }
+    }
+
+    private static class AsyncRunnable extends AsyncTask<File, Void, String> {
+        @Override
+        protected String doInBackground(File... files) {
+            String size;
+            if (!files[0].canRead()) {
+                return null;
+            }
+            size = FileUtils.formatCalculatedSize(FileUtils.getDirectorySize(files[0]));
+            return size;
         }
     }
 }
