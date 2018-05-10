@@ -1,11 +1,11 @@
 package com.sasfmlzr.filemanager.api.adapter;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.util.Log;
-import android.view.ViewGroup;
 
 import com.sasfmlzr.filemanager.api.fragment.EmptyPagerFragment;
 
@@ -15,18 +15,13 @@ import java.util.List;
 
 public class PagerFileListAdapter extends FragmentPagerAdapter {
 
+    private static final String KEY_FRAGMENT = "fragment";
     private List<File> fileList = new ArrayList<>();
     private Context context;
-    private static final String TAG = "PagerFileListAdapter";
 
     public PagerFileListAdapter(FragmentManager fragmentManager, Context context) {
         super(fragmentManager);
         this.context = context;
-    }
-
-    public void addFragment(List<File> files) {
-        fileList = files;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -49,8 +44,35 @@ public class PagerFileListAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        Log.d(TAG, "position = [" + position + "], object = [" + object + "]");
-        super.setPrimaryItem(container, position, object);
+    public Parcelable saveState() {
+        Bundle state = new Bundle();
+        ArrayList<String> arrayList = new ArrayList<>();
+        for (File file : fileList) {
+            arrayList.add(file.getAbsolutePath());
+        }
+        state.putStringArrayList(KEY_FRAGMENT, arrayList);
+        return state;
+
+    }
+
+    @Override
+    public void restoreState(Parcelable state, ClassLoader loader) {
+        if (state != null) {
+            Bundle bundle = (Bundle) state;
+            bundle.setClassLoader(loader);
+            ArrayList<String> arrayList = ((Bundle) state).getStringArrayList(KEY_FRAGMENT);
+
+            List<File> files = new ArrayList<>();
+            assert arrayList != null;
+            for (String path : arrayList) {
+                files.add(new File(path));
+            }
+            setFiles(files);
+        }
+    }
+
+    public void setFiles(List<File> files) {
+        fileList = files;
+        notifyDataSetChanged();
     }
 }

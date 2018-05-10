@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         files.add(new File(DEFAULT_PATH, "Android"));
 
         PagerFileListAdapter adapter = new PagerFileListAdapter(getSupportFragmentManager(), getApplicationContext());
-        adapter.addFragment(files);
+        adapter.setFiles(files);
         viewPager.setAdapter(adapter);
     }
 }
