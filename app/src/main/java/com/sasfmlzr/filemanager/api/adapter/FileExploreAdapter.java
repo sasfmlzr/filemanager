@@ -51,14 +51,14 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         if (holder.sizeItemView.getText() == "") {
             holder.sizeItemView.setText("...");
             HashMap<String, String> sizeDirectory = sqlDatabase.databaseRequest().selectCacheSizeDirectory();
-            String sizeFile = null;
+            String sizeFile;
             if (!sizeDirectory.isEmpty()) {
                 sizeFile = sizeDirectory.get(fileModel.getAbsolutePath());
                 holder.sizeItemView.setText(sizeFile);
             }
             if (fileModel.isFile()) {
                 holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
-            } else if (sizeFile == null) {
+            } else {
                 AsyncTask asyncTask = new AsyncRunnable() {
                     @Override
                     protected void onPostExecute(String s) {
