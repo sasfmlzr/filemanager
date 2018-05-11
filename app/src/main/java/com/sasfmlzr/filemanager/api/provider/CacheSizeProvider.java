@@ -14,22 +14,15 @@ import com.sasfmlzr.filemanager.api.other.data.DataCache;
 
 public class CacheSizeProvider extends ContentProvider {
 
-    private AppDatabase mOpenHelper;
-
-    /**
-     * The URI matcher.
-     */
     private static final UriMatcher MATCHER = buildUriMatcher();
-
-
     public static final int CACHEDIRECTORY = 100;
     public static final int CACHEDIRECTORY_ID = 101;
 
+    private AppDatabase mOpenHelper;
+
     private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        // content://com.metanit.tasktimer.provider/FRIENDS
         matcher.addURI(DataCache.AUTHORITY, DataCache.TABLE_NAME, CACHEDIRECTORY);
-        // content://com.metanit.tasktimer.provider/FRIENDS/8
         matcher.addURI(DataCache.AUTHORITY, DataCache.TABLE_NAME + "/#", CACHEDIRECTORY_ID);
         return matcher;
     }
@@ -75,6 +68,18 @@ public class CacheSizeProvider extends ContentProvider {
         }
     }
 
+    private void insertOrUpdateById(
+            SQLiteDatabase db,
+            Uri uri,
+            String table,
+            ContentValues values,
+            String column) throws Exception {
+        long id = db.insertWithOnConflict(table, column, values, SQLiteDatabase.CONFLICT_REPLACE);
+        if (id < 0) {
+            throw new Exception();
+        }
+    }
+
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
@@ -85,7 +90,8 @@ public class CacheSizeProvider extends ContentProvider {
         switch (match) {
             case CACHEDIRECTORY:
                 db = mOpenHelper.getWritableDatabase();
-                recordId = db.insert(DataCache.TABLE_NAME, null, values);
+                //recordId = db.execSQL();
+                recordId = db.insertWithOnConflict(DataCache.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                 if (recordId > 0) {
                     returnUri = DataCache.buildUri(recordId);
                 } else {

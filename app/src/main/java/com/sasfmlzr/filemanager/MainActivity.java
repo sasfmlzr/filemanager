@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.sasfmlzr.filemanager.api.adapter.PagerFileListAdapter;
-import com.sasfmlzr.filemanager.api.other.SQLDatabase;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
             .getExternalStorageDirectory();
     private static final int PERMISSION_CODE_READ_EXTERNAL_STORAGE = 0;
     private ViewPager viewPager;
-    public static SQLDatabase sqlDatabase = new SQLDatabase();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
         requestReadPermissions();
         loadViewPager();
         loadActionBar();
-        sqlDatabase.connectDatabase(getApplicationContext());
     }
 
     @Override
@@ -89,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        sqlDatabase.closeConnect();
+        viewPager.removeAllViews();
+        viewPager.setAdapter(null);
         super.onDestroy();
     }
 

@@ -18,7 +18,7 @@ public class DataCache {
         }
     }
 
-    static final Uri CONTENT_URI = Uri.withAppendedPath(CONTENT_AUTHORITY_URI, TABLE_NAME);
+    public static final Uri CONTENT_URI = Uri.withAppendedPath(CONTENT_AUTHORITY_URI, TABLE_NAME);
 
     public static Uri buildUri(long taskId) {
         return ContentUris.withAppendedId(CONTENT_URI, taskId);
