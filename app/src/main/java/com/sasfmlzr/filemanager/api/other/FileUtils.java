@@ -1,4 +1,8 @@
 package com.sasfmlzr.filemanager.api.other;
+import android.view.View;
+
+import com.sasfmlzr.filemanager.api.provider.CacheProviderOperation;
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -28,7 +32,7 @@ public class FileUtils {
         return displaySize;
     }
 
-    public static long getDirectorySize(File directory) {
+    public static long getDirectorySize(File directory, View view) {
         final File[] files = directory.listFiles();
         long size = 0;
         if (files == null) {
@@ -38,7 +42,9 @@ public class FileUtils {
         for (final File file : files) {
             try {
                 if (!isSymlink(file)) {
-                    size += sizeOf(file);
+                    long sizeFile =  sizeOf(file, view);
+                    CacheProviderOperation.addToContentProvider(view, file.getAbsolutePath(), formatCalculatedSize(sizeFile));
+                    size += sizeOf(file, view);
                     if (size < 0) {
                         break;
                     }
@@ -47,6 +53,7 @@ public class FileUtils {
                 // ignore exception when asking for symlink
             }
         }
+        CacheProviderOperation.addToContentProvider(view, directory.getAbsolutePath(), formatCalculatedSize(size));
         return size;
     }
 
@@ -62,9 +69,9 @@ public class FileUtils {
         return !fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile());
     }
 
-    private static long sizeOf(File file) {
+    private static long sizeOf(File file, View view) {
         if (file.isDirectory()) {
-            return getDirectorySize(file);
+            return getDirectorySize(file, view);
         } else {
             return file.length();
         }

@@ -1,6 +1,10 @@
 package com.sasfmlzr.filemanager.api.fragment;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +21,10 @@ import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
+import com.sasfmlzr.filemanager.api.other.data.DataCache;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +37,7 @@ public class FileViewFragment extends Fragment {
     private File currentFile;
     private View view;
     private OnDirectorySelectedListener listener;
+    private static final String TAG = "FileViewFragment";
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
@@ -95,8 +103,8 @@ public class FileViewFragment extends Fragment {
 
     private void setAdapter(File path, FileExploreAdapter.PathItemClickListener listener) {
         List<File> fileList = FileOperation.loadPath(path, view.getContext());
-
-        RecyclerView.Adapter fileExploreAdapter = new FileExploreAdapter(fileList, listener);
+        HashMap<String, String> cacheSizeDirectory = selectAllToContentProvider();
+        RecyclerView.Adapter fileExploreAdapter = new FileExploreAdapter(fileList, listener, cacheSizeDirectory);
         fileListView.setAdapter(fileExploreAdapter);
     }
 
@@ -122,4 +130,37 @@ public class FileViewFragment extends Fragment {
         recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
         recyclerView.setAdapter(adapter);
     }
+
+    public interface OnCalculateSizeCompleted {
+        void onCalculateSize(String string);
+    }
+
+    public HashMap<String, String> selectAllToContentProvider() {
+        HashMap<String, String> hashMap = new HashMap<>();
+        String[] projection = {
+                DataCache.Columns.PATH,
+                DataCache.Columns.SIZE,
+        };
+        ContentResolver contentResolver = view.getContext().getContentResolver();
+        Cursor cursor = contentResolver.query(DataCache.CONTENT_URI,
+                projection,
+                null,
+                null,
+                DataCache.Columns.PATH);
+        if (cursor != null) {
+            Log.d(TAG, "count: " + cursor.getCount());
+            // перебор элементов
+            while (cursor.moveToNext()) {
+                for (int i = 0; i < cursor.getColumnCount(); i = i + 2) {
+                    hashMap.put(cursor.getString(i), cursor.getString(i + 1));
+                    Log.d(TAG, cursor.getColumnName(i) + " : " + cursor.getString(i));
+                }
+                Log.d(TAG, "=========================");
+            }
+            cursor.close();
+        }
+        return hashMap;
+    }
+
+
 }

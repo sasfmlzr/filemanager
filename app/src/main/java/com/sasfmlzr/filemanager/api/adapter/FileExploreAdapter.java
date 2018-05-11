@@ -1,13 +1,8 @@
 package com.sasfmlzr.filemanager.api.adapter;
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sasfmlzr.filemanager.R;
+import com.sasfmlzr.filemanager.api.fragment.FileViewFragment;
 import com.sasfmlzr.filemanager.api.other.FileUtils;
-import com.sasfmlzr.filemanager.api.other.data.DataCache;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -24,20 +19,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import static com.sasfmlzr.filemanager.api.provider.CacheProviderOperation.addToContentProvider;
+
 public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.ViewHolder> {
     private List<File> fileModels;
     private PathItemClickListener pathListener;
     private View view;
     private HashMap<String, String> sizeDirectory;
-    private static final String TAG = "FileExploreAdapter";
 
     public interface PathItemClickListener {
         void pathClicked(File file);
     }
 
-    public FileExploreAdapter(List<File> files, PathItemClickListener listener) {
+    public FileExploreAdapter(List<File> files,
+                              PathItemClickListener listener,
+                              HashMap<String, String> cacheSizeDirectory) {
         fileModels = files;
         pathListener = listener;
+        sizeDirectory = cacheSizeDirectory;
     }
 
     @NonNull
@@ -46,7 +45,6 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.current_item_file, parent, false);
         this.view = view;
-        this.sizeDirectory = selectAllToContentProvider();
         return new ViewHolder(view, pathListener);
     }
 
@@ -69,14 +67,11 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
             if (fileModel.isFile()) {
                 holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
             } else {
-                AsyncTask asyncTask = new AsyncRunnable() {
-                    @Override
-                    protected void onPostExecute(String s) {
-                        holder.sizeItemView.setText(s);
-                        addToContentProvider(fileModel.getAbsolutePath(), s);
-                        super.onPostExecute(s);
-                    }
-                }.execute(fileModel);
+                FileViewFragment.OnCalculateSizeCompleted listener = string -> {
+                    holder.sizeItemView.setText(string);
+                    addToContentProvider(view, fileModel.getAbsolutePath(), string);
+                };
+                new AsyncRunnableCalculateSize(listener, view).execute(fileModel);
             }
         }
         holder.nameView.setText(fileModel.getName());
@@ -112,66 +107,29 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         }
     }
 
-    private static class AsyncRunnable extends AsyncTask<File, Void, String> {
+    private static class AsyncRunnableCalculateSize extends AsyncTask<File, Void, String> {
+        private FileViewFragment.OnCalculateSizeCompleted listener;
+        private View view;
+
+        AsyncRunnableCalculateSize(FileViewFragment.OnCalculateSizeCompleted listener, View view) {
+            this.listener = listener;
+            this.view = view;
+        }
+
         @Override
         protected String doInBackground(File... files) {
             String size;
             if (!files[0].canRead()) {
                 return null;
             }
-            size = FileUtils.formatCalculatedSize(FileUtils.getDirectorySize(files[0]));
+            size = FileUtils.formatCalculatedSize(FileUtils.getDirectorySize(files[0], view));
             return size;
         }
-    }
 
-    public HashMap<String, String> selectAllToContentProvider() {
-        HashMap<String, String> hashMap = new HashMap<>();
-        String[] projection = {
-                DataCache.Columns.PATH,
-                DataCache.Columns.SIZE,
-        };
-        ContentResolver contentResolver = view.getContext().getContentResolver();
-        Cursor cursor = contentResolver.query(DataCache.CONTENT_URI,
-                projection,
-                null,
-                null,
-                DataCache.Columns.PATH);
-        if (cursor != null) {
-            Log.d(TAG, "count: " + cursor.getCount());
-            // перебор элементов
-            while (cursor.moveToNext()) {
-                for (int i = 0; i < cursor.getColumnCount(); i = i + 2) {
-                    hashMap.put(cursor.getString(i), cursor.getString(i + 1));
-                    Log.d(TAG, cursor.getColumnName(i) + " : " + cursor.getString(i));
-                }
-                Log.d(TAG, "=========================");
-            }
-            cursor.close();
+        @Override
+        protected void onPostExecute(String s) {
+            listener.onCalculateSize(s);
+            super.onPostExecute(s);
         }
-        return hashMap;
-    }
-
-    public void addToContentProvider(String path, String size) {
-        ContentResolver contentResolver = view.getContext().getContentResolver();
-        ContentValues values = new ContentValues();
-        values.put(DataCache.Columns.PATH, path);
-        values.put(DataCache.Columns.SIZE, size);
-        Uri uri = contentResolver.insert(DataCache.CONTENT_URI, values);
-    }
-
-    public void updateToContentProvider(String path, String size) {
-        ContentResolver contentResolver = view.getContext().getContentResolver();
-        ContentValues values = new ContentValues();
-        values.put(DataCache.Columns.PATH, path);
-        values.put(DataCache.Columns.SIZE, size);
-        String selection = DataCache.Columns.PATH + " = " + path;
-        int count = contentResolver.update(DataCache.CONTENT_URI, values, selection, null);
-    }
-
-    public void deleteToContentProvider(String path) {
-        ContentResolver contentResolver = view.getContext().getContentResolver();
-        String selection = DataCache.Columns.PATH + " = ?";
-        String[] args = {path};
-        int count = contentResolver.delete(DataCache.CONTENT_URI, selection, args);
     }
 }
