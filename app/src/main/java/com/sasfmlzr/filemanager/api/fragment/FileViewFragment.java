@@ -1,10 +1,8 @@
 package com.sasfmlzr.filemanager.api.fragment;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +18,7 @@ import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
-import com.sasfmlzr.filemanager.api.other.data.DataCache;
+import com.sasfmlzr.filemanager.api.other.FileUtils;
 
 import java.io.File;
 import java.util.HashMap;
@@ -29,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.sasfmlzr.filemanager.api.file.FileOperation.getParentsFile;
+import static com.sasfmlzr.filemanager.api.provider.CacheProviderOperation.selectAllToContentProvider;
 
 public class FileViewFragment extends Fragment {
     private static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
@@ -37,7 +35,8 @@ public class FileViewFragment extends Fragment {
     private File currentFile;
     private View view;
     private OnDirectorySelectedListener listener;
-    private static final String TAG = "FileViewFragment";
+    private AsyncTask runReadDatabase;
+
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
@@ -76,6 +75,19 @@ public class FileViewFragment extends Fragment {
         listener = null;
     }
 
+    @Override
+    public void onStop() {
+        runReadDatabase.cancel(true);
+        super.onStop();
+    }
+
+    public interface OnDirectorySelectedListener {
+        void onDirectorySelected(File currentFile);
+    }
+
+    private DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (file) ->
+            listener.onDirectorySelected(file);
+
     public static FileViewFragment newInstance(final File file) {
         Bundle args = new Bundle();
         FileViewFragment fragment = new FileViewFragment();
@@ -94,17 +106,19 @@ public class FileViewFragment extends Fragment {
         }
     };
 
-    private DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (file) ->
-            listener.onDirectorySelected(file);
-
-    public interface OnDirectorySelectedListener {
-        void onDirectorySelected(File currentFile);
-    }
-
     private void setAdapter(File path, FileExploreAdapter.PathItemClickListener listener) {
         List<File> fileList = FileOperation.loadPath(path, view.getContext());
-        HashMap<String, String> cacheSizeDirectory = selectAllToContentProvider();
-        RecyclerView.Adapter fileExploreAdapter = new FileExploreAdapter(fileList, listener, cacheSizeDirectory);
+
+        ReadDatabaseListener readDatabaseListener = cacheSizeDirectory -> {
+            RecyclerView.Adapter fileExploreAdapter =
+                    new FileExploreAdapter(fileList, listener, cacheSizeDirectory);
+            fileListView.setAdapter(fileExploreAdapter);
+        };
+        runReadDatabase = new RunReadDatabase(view.getContext().getContentResolver(), readDatabaseListener).execute();
+
+        HashMap<String, String> cacheSizeDirectory = new HashMap<>();
+        RecyclerView.Adapter fileExploreAdapter =
+                new FileExploreAdapter(fileList, listener, cacheSizeDirectory);
         fileListView.setAdapter(fileExploreAdapter);
     }
 
@@ -135,32 +149,83 @@ public class FileViewFragment extends Fragment {
         void onCalculateSize(String string);
     }
 
-    public HashMap<String, String> selectAllToContentProvider() {
-        HashMap<String, String> hashMap = new HashMap<>();
-        String[] projection = {
-                DataCache.Columns.PATH,
-                DataCache.Columns.SIZE,
-        };
-        ContentResolver contentResolver = view.getContext().getContentResolver();
-        Cursor cursor = contentResolver.query(DataCache.CONTENT_URI,
-                projection,
-                null,
-                null,
-                DataCache.Columns.PATH);
-        if (cursor != null) {
-            Log.d(TAG, "count: " + cursor.getCount());
-            // перебор элементов
-            while (cursor.moveToNext()) {
-                for (int i = 0; i < cursor.getColumnCount(); i = i + 2) {
-                    hashMap.put(cursor.getString(i), cursor.getString(i + 1));
-                    Log.d(TAG, cursor.getColumnName(i) + " : " + cursor.getString(i));
-                }
-                Log.d(TAG, "=========================");
-            }
-            cursor.close();
-        }
-        return hashMap;
+    public interface ReadDatabaseListener {
+        void listenReadDatabase(HashMap<String, String> cacheSizeDirectory);
     }
 
 
+    public class RunReadDatabase extends AsyncTask<Void, Void, HashMap> {
+        ContentResolver contentResolver;
+        ReadDatabaseListener listener;
+
+        public RunReadDatabase(ContentResolver contentResolver, ReadDatabaseListener listener) {
+            this.contentResolver = contentResolver;
+            this.listener = listener;
+        }
+
+        @Override
+        protected HashMap doInBackground(Void... voids) {
+            HashMap<String, String> hashMap = selectAllToContentProvider(contentResolver);
+            return hashMap;
+        }
+
+        @Override
+        protected void onPostExecute(HashMap hashMap) {
+            if (!hashMap.isEmpty()) {
+                listener.listenReadDatabase(hashMap);
+            }
+            super.onPostExecute(hashMap);
+        }
+    }
+
+
+    /*private Handler mUiHandler = new Handler();
+
+    public class TestThread implements Runnable {
+        ContentResolver contentResolver;
+        ReadDatabaseListener listener;
+
+        TestThread(ContentResolver contentResolver, ReadDatabaseListener listener) {
+            this.contentResolver=contentResolver;
+            this.listener=listener;
+        }
+
+        @Override
+        public void run() {
+            HashMap<String,String> hashMap = selectAllToContentProvider(contentResolver);
+            mUiHandler.post(() -> {
+                if (!hashMap.isEmpty()) {
+                    listener.listenReadDatabase(hashMap);
+                }
+            });
+        }
+    }*/
+
+
+    public static class AsyncRunnableCalculateSize extends AsyncTask<File, Void, String> {
+        private FileViewFragment.OnCalculateSizeCompleted listener;
+        private ContentResolver contentResolver;
+
+        public AsyncRunnableCalculateSize(FileViewFragment.OnCalculateSizeCompleted listener,
+                                          ContentResolver contentResolver) {
+            this.listener = listener;
+            this.contentResolver = contentResolver;
+        }
+
+        @Override
+        protected String doInBackground(File... files) {
+            String size;
+            if (!files[0].canRead()) {
+                return null;
+            }
+            size = FileUtils.formatCalculatedSize(FileUtils.getDirectorySize(files[0], contentResolver));
+            return size;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            listener.onCalculateSize(s);
+            super.onPostExecute(s);
+        }
+    }
 }

@@ -68,18 +68,6 @@ public class CacheSizeProvider extends ContentProvider {
         }
     }
 
-    private void insertOrUpdateById(
-            SQLiteDatabase db,
-            Uri uri,
-            String table,
-            ContentValues values,
-            String column) throws Exception {
-        long id = db.insertWithOnConflict(table, column, values, SQLiteDatabase.CONFLICT_REPLACE);
-        if (id < 0) {
-            throw new Exception();
-        }
-    }
-
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {

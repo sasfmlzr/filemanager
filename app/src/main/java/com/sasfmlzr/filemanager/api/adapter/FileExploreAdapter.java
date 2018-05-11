@@ -1,6 +1,6 @@
 package com.sasfmlzr.filemanager.api.adapter;
 
-import android.os.AsyncTask;
+import android.content.ContentResolver;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,7 +24,7 @@ import static com.sasfmlzr.filemanager.api.provider.CacheProviderOperation.addTo
 public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.ViewHolder> {
     private List<File> fileModels;
     private PathItemClickListener pathListener;
-    private View view;
+    private ContentResolver contentResolver;
     private HashMap<String, String> sizeDirectory;
 
     public interface PathItemClickListener {
@@ -44,7 +44,7 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.current_item_file, parent, false);
-        this.view = view;
+        contentResolver = view.getContext().getContentResolver();
         return new ViewHolder(view, pathListener);
     }
 
@@ -62,16 +62,27 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
                 sizeFile = sizeDirectory.get(fileModel.getAbsolutePath());
                 if (sizeFile != null) {
                     holder.sizeItemView.setText(sizeFile);
+                } else {
+                    if (fileModel.isFile()) {
+                        holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
+                    } else {
+                        FileViewFragment.OnCalculateSizeCompleted listener = string -> {
+                            holder.sizeItemView.setText(string);
+                            addToContentProvider(contentResolver, fileModel.getAbsolutePath(), string);
+                        };
+                        new FileViewFragment.AsyncRunnableCalculateSize(listener, contentResolver).execute(fileModel);
+                    }
                 }
-            }
-            if (fileModel.isFile()) {
-                holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
             } else {
-                FileViewFragment.OnCalculateSizeCompleted listener = string -> {
-                    holder.sizeItemView.setText(string);
-                    addToContentProvider(view, fileModel.getAbsolutePath(), string);
-                };
-                new AsyncRunnableCalculateSize(listener, view).execute(fileModel);
+                if (fileModel.isFile()) {
+                    holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
+                } else {
+                    FileViewFragment.OnCalculateSizeCompleted listener = string -> {
+                        holder.sizeItemView.setText(string);
+                        addToContentProvider(contentResolver, fileModel.getAbsolutePath(), string);
+                    };
+                    new FileViewFragment.AsyncRunnableCalculateSize(listener, contentResolver).execute(fileModel);
+                }
             }
         }
         holder.nameView.setText(fileModel.getName());
@@ -104,32 +115,6 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         @Override
         public void onClick(View v) {
             pathListener.pathClicked(fileModels.get(getAdapterPosition()));
-        }
-    }
-
-    private static class AsyncRunnableCalculateSize extends AsyncTask<File, Void, String> {
-        private FileViewFragment.OnCalculateSizeCompleted listener;
-        private View view;
-
-        AsyncRunnableCalculateSize(FileViewFragment.OnCalculateSizeCompleted listener, View view) {
-            this.listener = listener;
-            this.view = view;
-        }
-
-        @Override
-        protected String doInBackground(File... files) {
-            String size;
-            if (!files[0].canRead()) {
-                return null;
-            }
-            size = FileUtils.formatCalculatedSize(FileUtils.getDirectorySize(files[0], view));
-            return size;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            listener.onCalculateSize(s);
-            super.onPostExecute(s);
         }
     }
 }
