@@ -53,7 +53,6 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         final DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
                 DateFormat.SHORT, Locale.getDefault());
         File fileModel = fileModels.get(position);
-        holder.dateView.setText(df.format(fileModel.lastModified()));
 
         if (holder.sizeItemView.getText() == "") {
             holder.sizeItemView.setText("...");
@@ -63,28 +62,14 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
                 if (sizeFile != null) {
                     holder.sizeItemView.setText(sizeFile);
                 } else {
-                    if (fileModel.isFile()) {
-                        holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
-                    } else {
-                        FileViewFragment.OnCalculateSizeCompleted listener = string -> {
-                            holder.sizeItemView.setText(string);
-                            addToContentProvider(contentResolver, fileModel.getAbsolutePath(), string);
-                        };
-                        new FileViewFragment.AsyncRunnableCalculateSize(listener, contentResolver).execute(fileModel);
-                    }
+                    replaceTextViewSize(fileModel, holder);
                 }
             } else {
-                if (fileModel.isFile()) {
-                    holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
-                } else {
-                    FileViewFragment.OnCalculateSizeCompleted listener = string -> {
-                        holder.sizeItemView.setText(string);
-                        addToContentProvider(contentResolver, fileModel.getAbsolutePath(), string);
-                    };
-                    new FileViewFragment.AsyncRunnableCalculateSize(listener, contentResolver).execute(fileModel);
-                }
+                replaceTextViewSize(fileModel, holder);
             }
         }
+
+        holder.dateView.setText(df.format(fileModel.lastModified()));
         holder.nameView.setText(fileModel.getName());
         if (fileModel.isFile()) {
             holder.imageView.setImageResource(R.drawable.file);
@@ -96,6 +81,18 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
     @Override
     public int getItemCount() {
         return fileModels.size();
+    }
+
+    private void replaceTextViewSize(File fileModel, ViewHolder holder) {
+        if (fileModel.isFile()) {
+            holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
+        } else {
+            FileViewFragment.OnCalculateSizeCompleted listener = string -> {
+                holder.sizeItemView.setText(string);
+                addToContentProvider(contentResolver, fileModel.getAbsolutePath(), string);
+            };
+            new FileViewFragment.AsyncRunnableCalculateSize(listener, contentResolver).execute(fileModel);
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
