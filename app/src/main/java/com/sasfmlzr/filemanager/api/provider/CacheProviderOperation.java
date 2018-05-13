@@ -1,8 +1,8 @@
 package com.sasfmlzr.filemanager.api.provider;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.net.Uri;
 import android.util.Log;
 
 import com.sasfmlzr.filemanager.api.other.data.DataCache;
@@ -16,7 +16,7 @@ public class CacheProviderOperation {
         ContentValues values = new ContentValues();
         values.put(DataCache.Columns.PATH, path);
         values.put(DataCache.Columns.SIZE, size);
-        Uri uri = contentResolver.insert(DataCache.CONTENT_URI, values);
+        contentResolver.insert(DataCache.CONTENT_URI, values);
     }
 
     public static HashMap<String, String> selectAllToContentProvider(ContentResolver contentResolver) {
@@ -32,7 +32,6 @@ public class CacheProviderOperation {
                 DataCache.Columns.PATH);
         if (cursor != null) {
             Log.d(TAG, "count: " + cursor.getCount());
-            // перебор элементов
             while (cursor.moveToNext()) {
                 for (int i = 0; i < cursor.getColumnCount(); i = i + 2) {
                     hashMap.put(cursor.getString(i), cursor.getString(i + 1));

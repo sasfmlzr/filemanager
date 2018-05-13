@@ -1,4 +1,5 @@
 package com.sasfmlzr.filemanager.api.provider;
+
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -78,7 +79,6 @@ public class CacheSizeProvider extends ContentProvider {
         switch (match) {
             case CACHEDIRECTORY:
                 db = mOpenHelper.getWritableDatabase();
-                //recordId = db.execSQL();
                 recordId = db.insertWithOnConflict(DataCache.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                 if (recordId > 0) {
                     returnUri = DataCache.buildUri(recordId);

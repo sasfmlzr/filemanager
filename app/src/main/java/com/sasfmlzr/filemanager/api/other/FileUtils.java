@@ -1,6 +1,6 @@
 package com.sasfmlzr.filemanager.api.other;
+
 import android.content.ContentResolver;
-import android.view.View;
 
 import com.sasfmlzr.filemanager.api.provider.CacheProviderOperation;
 
@@ -43,7 +43,7 @@ public class FileUtils {
         for (final File file : files) {
             try {
                 if (!isSymlink(file)) {
-                    long sizeFile =  sizeOf(file, contentResolver);
+                    long sizeFile = sizeOf(file, contentResolver);
                     CacheProviderOperation.addToContentProvider(contentResolver, file.getAbsolutePath(), formatCalculatedSize(sizeFile));
                     size += sizeOf(file, contentResolver);
                     if (size < 0) {
