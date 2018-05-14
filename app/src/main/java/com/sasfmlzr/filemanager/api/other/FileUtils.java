@@ -39,12 +39,9 @@ public class FileUtils {
         if (files == null) {
             return 0L;
         }
-
         for (final File file : files) {
             try {
                 if (!isSymlink(file)) {
-                    long sizeFile = sizeOf(file, contentResolver);
-                    CacheProviderOperation.addToContentProvider(contentResolver, file.getAbsolutePath(), formatCalculatedSize(sizeFile));
                     size += sizeOf(file, contentResolver);
                     if (size < 0) {
                         break;
@@ -72,7 +69,9 @@ public class FileUtils {
 
     private static long sizeOf(File file, ContentResolver contentResolver) {
         if (file.isDirectory()) {
-            return getDirectorySize(file, contentResolver);
+            long directorySize = getDirectorySize(file, contentResolver);
+            CacheProviderOperation.addToContentProvider(contentResolver, file.getAbsolutePath(), formatCalculatedSize(directorySize));
+            return directorySize;
         } else {
             return file.length();
         }
