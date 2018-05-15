@@ -14,6 +14,13 @@ public class FileUtils {
     private static final BigInteger MB_BI = KB_BI.multiply(KB_BI);
     private static final BigInteger GB_BI = KB_BI.multiply(MB_BI);
     private static final BigInteger TB_BI = KB_BI.multiply(GB_BI);
+    private static CalculateSize calculateSizeCallback = (file, size, resolver) -> {
+        CacheProviderOperation.addToContentProvider(resolver, file.getAbsolutePath(), size);
+    };
+
+    public interface CalculateSize {
+        void onCalculatedDirectorySize(File file, String size, ContentResolver resolver);
+    }
 
     public static String formatCalculatedSize(long ls) {
         BigInteger size = BigInteger.valueOf(ls);
@@ -51,7 +58,8 @@ public class FileUtils {
                 // ignore exception when asking for symlink
             }
         }
-        CacheProviderOperation.addToContentProvider(contentResolver, directory.getAbsolutePath(), formatCalculatedSize(size));
+        calculateSizeCallback.onCalculatedDirectorySize(directory, formatCalculatedSize(size), contentResolver);
+        // CacheProviderOperation.addToContentProvider(contentResolver, directory.getAbsolutePath(), formatCalculatedSize(size));
         return size;
     }
 
@@ -70,7 +78,8 @@ public class FileUtils {
     private static long sizeOf(File file, ContentResolver contentResolver) {
         if (file.isDirectory()) {
             long directorySize = getDirectorySize(file, contentResolver);
-            CacheProviderOperation.addToContentProvider(contentResolver, file.getAbsolutePath(), formatCalculatedSize(directorySize));
+            calculateSizeCallback.onCalculatedDirectorySize(file, formatCalculatedSize(directorySize), contentResolver);
+            //CacheProviderOperation.addToContentProvider(contentResolver, file.getAbsolutePath(), formatCalculatedSize(directorySize));
             return directorySize;
         } else {
             return file.length();

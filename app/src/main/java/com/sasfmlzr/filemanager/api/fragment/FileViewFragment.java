@@ -78,6 +78,13 @@ public class FileViewFragment extends Fragment {
     @Override
     public void onStop() {
         runReadDatabase.cancel(true);
+        FileExploreAdapter adapter = (FileExploreAdapter) fileListView.getAdapter();
+        if (adapter.asyncRunnableCalculateSize != null) {
+            if (adapter.asyncRunnableCalculateSize.getStatus()
+                    .equals(AsyncTask.Status.RUNNING)) {
+                adapter.asyncRunnableCalculateSize.cancel(true);
+            }
+        }
         super.onStop();
     }
 
@@ -178,7 +185,6 @@ public class FileViewFragment extends Fragment {
             super.onPostExecute(hashMap);
         }
     }
-
 
     /*private Handler mUiHandler = new Handler();
 

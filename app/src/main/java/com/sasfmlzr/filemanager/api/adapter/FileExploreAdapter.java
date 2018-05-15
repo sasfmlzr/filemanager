@@ -1,6 +1,7 @@
 package com.sasfmlzr.filemanager.api.adapter;
 
 import android.content.ContentResolver;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
     private PathItemClickListener pathListener;
     private ContentResolver contentResolver;
     private HashMap<String, String> sizeDirectory;
+    public AsyncTask asyncRunnableCalculateSize;
 
     public interface PathItemClickListener {
         void pathClicked(File file);
@@ -78,9 +80,15 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         }
     }
 
+
     @Override
     public int getItemCount() {
         return fileModels.size();
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
     }
 
     private void replaceTextViewSize(File fileModel, ViewHolder holder) {
@@ -91,7 +99,7 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
                 holder.sizeItemView.setText(string);
                 addToContentProvider(contentResolver, fileModel.getAbsolutePath(), string);
             };
-            new FileViewFragment.AsyncRunnableCalculateSize(listener, contentResolver).execute(fileModel);
+            asyncRunnableCalculateSize = new FileViewFragment.AsyncRunnableCalculateSize(listener, contentResolver).execute(fileModel);
         }
     }
 
