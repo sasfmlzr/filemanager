@@ -18,9 +18,11 @@ import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.adapter.DirectoryNavigationAdapter;
 import com.sasfmlzr.filemanager.api.adapter.FileExploreAdapter;
 import com.sasfmlzr.filemanager.api.file.FileOperation;
+import com.sasfmlzr.filemanager.api.model.FileModel;
 import com.sasfmlzr.filemanager.api.other.FileUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -115,17 +117,23 @@ public class FileViewFragment extends Fragment {
 
     private void setAdapter(File path, FileExploreAdapter.PathItemClickListener listener) {
         List<File> fileList = FileOperation.loadPath(path, view.getContext());
+        List<FileModel> fileModels = new ArrayList<>();
+        if (fileList != null) {
+            for (File file : fileList) {
+                fileModels.add(new FileModel(file));
+            }
+        }
 
         ReadDatabaseListener readDatabaseListener = cacheSizeDirectory -> {
             RecyclerView.Adapter fileExploreAdapter =
-                    new FileExploreAdapter(fileList, listener, cacheSizeDirectory);
+                    new FileExploreAdapter(fileModels, listener, cacheSizeDirectory);
             fileListView.setAdapter(fileExploreAdapter);
         };
         runReadDatabase = new RunReadDatabase(view.getContext().getContentResolver(), readDatabaseListener).execute();
 
         HashMap<String, String> cacheSizeDirectory = new HashMap<>();
         RecyclerView.Adapter fileExploreAdapter =
-                new FileExploreAdapter(fileList, listener, cacheSizeDirectory);
+                new FileExploreAdapter(fileModels, listener, cacheSizeDirectory);
         fileListView.setAdapter(fileExploreAdapter);
     }
 

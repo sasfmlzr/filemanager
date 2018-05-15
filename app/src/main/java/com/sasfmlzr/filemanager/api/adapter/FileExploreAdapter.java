@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.sasfmlzr.filemanager.R;
 import com.sasfmlzr.filemanager.api.fragment.FileViewFragment;
+import com.sasfmlzr.filemanager.api.model.FileModel;
 import com.sasfmlzr.filemanager.api.other.FileUtils;
 
 import java.io.File;
@@ -23,7 +24,8 @@ import java.util.Locale;
 import static com.sasfmlzr.filemanager.api.provider.CacheProviderOperation.addToContentProvider;
 
 public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.ViewHolder> {
-    private List<File> fileModels;
+
+    private List<FileModel> fileModels;
     private PathItemClickListener pathListener;
     private ContentResolver contentResolver;
     private HashMap<String, String> sizeDirectory;
@@ -33,7 +35,7 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         void pathClicked(File file);
     }
 
-    public FileExploreAdapter(List<File> files,
+    public FileExploreAdapter(List<FileModel> files,
                               PathItemClickListener listener,
                               HashMap<String, String> cacheSizeDirectory) {
         fileModels = files;
@@ -54,7 +56,7 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
                 DateFormat.SHORT, Locale.getDefault());
-        File fileModel = fileModels.get(position);
+        File fileModel = fileModels.get(position).getFile();
 
         if (holder.sizeItemView.getText() == "") {
             holder.sizeItemView.setText("...");
@@ -91,6 +93,14 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         super.onDetachedFromRecyclerView(recyclerView);
     }
 
+    public void replaceSizeOnTextView(File file, String size) {
+        if (fileModels.contains(file)) {
+            int pos = fileModels.indexOf(file);
+            fileModels.set(pos, new FileModel(file, size));
+            notifyItemChanged(pos);
+        }
+    }
+
     private void replaceTextViewSize(File fileModel, ViewHolder holder) {
         if (fileModel.isFile()) {
             holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
@@ -119,7 +129,7 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
 
         @Override
         public void onClick(View v) {
-            pathListener.pathClicked(fileModels.get(getAdapterPosition()));
+            pathListener.pathClicked(fileModels.get(getAdapterPosition()).getFile());
         }
     }
 }
