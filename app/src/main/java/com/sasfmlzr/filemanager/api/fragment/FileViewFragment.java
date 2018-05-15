@@ -126,6 +126,7 @@ public class FileViewFragment extends Fragment {
         fileListView = view.findViewById(R.id.fileList);
         RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
         fileListView.setLayoutManager(layoutManagerPathView);
+        fileListView.setNestedScrollingEnabled(false);
         setAdapter(currentFile, pathListener);
     }
 
