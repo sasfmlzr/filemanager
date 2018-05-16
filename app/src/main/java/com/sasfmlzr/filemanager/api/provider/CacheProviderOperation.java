@@ -12,15 +12,15 @@ import java.util.HashMap;
 public class CacheProviderOperation {
     private static final String TAG = "CacheProviderOperation";
 
-    public static void addToContentProvider(ContentResolver contentResolver, String path, String size) {
+    public static void addToContentProvider(ContentResolver contentResolver, String path, Long size) {
         ContentValues values = new ContentValues();
         values.put(DataCache.Columns.PATH, path);
         values.put(DataCache.Columns.SIZE, size);
         contentResolver.insert(DataCache.CONTENT_URI, values);
     }
 
-    public static HashMap<String, String> selectAllToContentProvider(ContentResolver contentResolver) {
-        HashMap<String, String> hashMap = new HashMap<>();
+    public static HashMap<String, Long> selectAllToContentProvider(ContentResolver contentResolver) {
+        HashMap<String, Long> hashMap = new HashMap<>();
         String[] projection = {
                 DataCache.Columns.PATH,
                 DataCache.Columns.SIZE,
@@ -34,7 +34,7 @@ public class CacheProviderOperation {
             Log.d(TAG, "count: " + cursor.getCount());
             while (cursor.moveToNext()) {
                 for (int i = 0; i < cursor.getColumnCount(); i = i + 2) {
-                    hashMap.put(cursor.getString(i), cursor.getString(i + 1));
+                    hashMap.put(cursor.getString(i), cursor.getLong(i + 1));
                     //Log.d(TAG, cursor.getColumnName(i) + " : " + cursor.getString(i));
                 }
                 //Log.d(TAG, "=========================");

@@ -1,12 +1,12 @@
 package com.sasfmlzr.filemanager.api.other;
 
-import android.content.ContentResolver;
-
-import com.sasfmlzr.filemanager.api.provider.CacheProviderOperation;
+import com.sasfmlzr.filemanager.api.model.FileModel;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileUtils {
     private static final long ONE_KB = 1024;
@@ -14,15 +14,9 @@ public class FileUtils {
     private static final BigInteger MB_BI = KB_BI.multiply(KB_BI);
     private static final BigInteger GB_BI = KB_BI.multiply(MB_BI);
     private static final BigInteger TB_BI = KB_BI.multiply(GB_BI);
-    private static CalculateSize calculateSizeCallback = (file, size, resolver) -> {
-        CacheProviderOperation.addToContentProvider(resolver, file.getAbsolutePath(), size);
-    };
 
-    public interface CalculateSize {
-        void onCalculatedDirectorySize(File file, String size, ContentResolver resolver);
-    }
+    public static String formatCalculatedSize(Long ls) {
 
-    public static String formatCalculatedSize(long ls) {
         BigInteger size = BigInteger.valueOf(ls);
         String displaySize;
 
@@ -40,16 +34,19 @@ public class FileUtils {
         return displaySize;
     }
 
-    public static long getDirectorySize(File directory, ContentResolver contentResolver) {
+    public static List<FileModel> getDirectorySize(File directory) {
         final File[] files = directory.listFiles();
+        List<FileModel> fileModels = new ArrayList<>();
         long size = 0;
         if (files == null) {
-            return 0L;
+            return null;
         }
         for (final File file : files) {
             try {
                 if (!isSymlink(file)) {
-                    size += sizeOf(file, contentResolver);
+                    long sizeInnerFile = sizeOf(file);
+                    fileModels.add(new FileModel(file, sizeInnerFile));
+                    size += sizeInnerFile;
                     if (size < 0) {
                         break;
                     }
@@ -58,9 +55,19 @@ public class FileUtils {
                 // ignore exception when asking for symlink
             }
         }
-        calculateSizeCallback.onCalculatedDirectorySize(directory, formatCalculatedSize(size), contentResolver);
         // CacheProviderOperation.addToContentProvider(contentResolver, directory.getAbsolutePath(), formatCalculatedSize(size));
-        return size;
+        fileModels.add(new FileModel(directory, size));
+        return fileModels;
+    }
+
+    public static List<FileModel> getOnlyDirectory(List<FileModel> fileModels) {
+        List<FileModel> fileModelResult = new ArrayList<>();
+        for (FileModel fm : fileModels) {
+            if (fm.getFile().isDirectory()) {
+                fileModelResult.add(fm);
+            }
+        }
+        return fileModelResult;
     }
 
     private static boolean isSymlink(File file) throws IOException {
@@ -75,12 +82,12 @@ public class FileUtils {
         return !fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile());
     }
 
-    private static long sizeOf(File file, ContentResolver contentResolver) {
+    private static long sizeOf(File file) {
         if (file.isDirectory()) {
-            long directorySize = getDirectorySize(file, contentResolver);
-            calculateSizeCallback.onCalculatedDirectorySize(file, formatCalculatedSize(directorySize), contentResolver);
             //CacheProviderOperation.addToContentProvider(contentResolver, file.getAbsolutePath(), formatCalculatedSize(directorySize));
-            return directorySize;
+            List<FileModel> list = getDirectorySize(file);
+            assert list != null;
+            return list.get(list.size() - 1).getSizeDirectory();
         } else {
             return file.length();
         }

@@ -3,16 +3,16 @@ import java.io.File;
 
 public class FileModel {
     private File file;
-    private String sizeDirectory;
+    private Long sizeDirectory;
 
-    public FileModel(File file, String size) {
+    public FileModel(File file, Long size) {
         this.file = file;
         this.sizeDirectory = size;
     }
 
     public FileModel(File file) {
         this.file = file;
-        this.sizeDirectory = null;
+        this.sizeDirectory = 0L;
     }
 
     public File getFile() {
@@ -23,11 +23,11 @@ public class FileModel {
         this.file = file;
     }
 
-    public String getSizeDirectory() {
+    public long getSizeDirectory() {
         return sizeDirectory;
     }
 
-    public void setSizeDirectory(String sizeDirectory) {
+    public void setSizeDirectory(Long sizeDirectory) {
         this.sizeDirectory = sizeDirectory;
     }
 }

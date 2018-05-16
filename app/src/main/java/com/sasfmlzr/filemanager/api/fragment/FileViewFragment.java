@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.sasfmlzr.filemanager.api.file.FileOperation.getParentsFile;
+import static com.sasfmlzr.filemanager.api.provider.CacheProviderOperation.addToContentProvider;
 import static com.sasfmlzr.filemanager.api.provider.CacheProviderOperation.selectAllToContentProvider;
 
 public class FileViewFragment extends Fragment {
@@ -38,7 +39,7 @@ public class FileViewFragment extends Fragment {
     private View view;
     private OnDirectorySelectedListener listener;
     private AsyncTask runReadDatabase;
-
+    private AsyncTask calculateSize;
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
@@ -80,12 +81,8 @@ public class FileViewFragment extends Fragment {
     @Override
     public void onStop() {
         runReadDatabase.cancel(true);
-        FileExploreAdapter adapter = (FileExploreAdapter) fileListView.getAdapter();
-        if (adapter.asyncRunnableCalculateSize != null) {
-            if (adapter.asyncRunnableCalculateSize.getStatus()
-                    .equals(AsyncTask.Status.RUNNING)) {
-                adapter.asyncRunnableCalculateSize.cancel(true);
-            }
+        if (calculateSize!=null){
+            calculateSize.cancel(true);
         }
         super.onStop();
     }
@@ -125,13 +122,18 @@ public class FileViewFragment extends Fragment {
         }
 
         ReadDatabaseListener readDatabaseListener = cacheSizeDirectory -> {
-            RecyclerView.Adapter fileExploreAdapter =
+            FileExploreAdapter fileExploreAdapter =
                     new FileExploreAdapter(fileModels, listener, cacheSizeDirectory);
             fileListView.setAdapter(fileExploreAdapter);
+            if (cacheSizeDirectory.isEmpty()) {
+                for (FileModel fileModel : fileModels) {
+                    calculateSizeDirectory(fileModel.getFile(), fileExploreAdapter);
+                }
+            }
         };
         runReadDatabase = new RunReadDatabase(view.getContext().getContentResolver(), readDatabaseListener).execute();
 
-        HashMap<String, String> cacheSizeDirectory = new HashMap<>();
+        HashMap<String, Long> cacheSizeDirectory = new HashMap<>();
         RecyclerView.Adapter fileExploreAdapter =
                 new FileExploreAdapter(fileModels, listener, cacheSizeDirectory);
         fileListView.setAdapter(fileExploreAdapter);
@@ -162,85 +164,72 @@ public class FileViewFragment extends Fragment {
     }
 
     public interface OnCalculateSizeCompleted {
-        void onCalculateSize(String string);
+        void onCalculateSize(List<FileModel> fileModels);
     }
 
     public interface ReadDatabaseListener {
-        void listenReadDatabase(HashMap<String, String> cacheSizeDirectory);
+        void listenReadDatabase(HashMap<String, Long> cacheSizeDirectory);
     }
 
 
-    public class RunReadDatabase extends AsyncTask<Void, Void, HashMap> {
+    public static class RunReadDatabase extends AsyncTask<Void, Void, HashMap<String, Long>> {
         ContentResolver contentResolver;
         ReadDatabaseListener listener;
 
-        public RunReadDatabase(ContentResolver contentResolver, ReadDatabaseListener listener) {
+        RunReadDatabase(ContentResolver contentResolver, ReadDatabaseListener listener) {
             this.contentResolver = contentResolver;
             this.listener = listener;
         }
 
         @Override
-        protected HashMap doInBackground(Void... voids) {
-            HashMap<String, String> hashMap = selectAllToContentProvider(contentResolver);
-            return hashMap;
+        protected HashMap<String, Long> doInBackground(Void... voids) {
+            return selectAllToContentProvider(contentResolver);
         }
 
         @Override
-        protected void onPostExecute(HashMap hashMap) {
-            if (!hashMap.isEmpty()) {
-                listener.listenReadDatabase(hashMap);
-            }
+        protected void onPostExecute(HashMap<String, Long> hashMap) {
+            listener.listenReadDatabase(hashMap);
             super.onPostExecute(hashMap);
         }
     }
 
-    /*private Handler mUiHandler = new Handler();
-
-    public class TestThread implements Runnable {
-        ContentResolver contentResolver;
-        ReadDatabaseListener listener;
-
-        TestThread(ContentResolver contentResolver, ReadDatabaseListener listener) {
-            this.contentResolver=contentResolver;
-            this.listener=listener;
-        }
-
-        @Override
-        public void run() {
-            HashMap<String,String> hashMap = selectAllToContentProvider(contentResolver);
-            mUiHandler.post(() -> {
-                if (!hashMap.isEmpty()) {
-                    listener.listenReadDatabase(hashMap);
+    private void calculateSizeDirectory(File file, FileExploreAdapter adapter) {
+        ContentResolver resolver = Objects.requireNonNull(getContext()).getContentResolver();
+        FileViewFragment.OnCalculateSizeCompleted listener = (List<FileModel> fileModels) -> {
+            if (fileModels != null) {
+                List<FileModel> listDirectory = FileUtils.getOnlyDirectory(fileModels);
+                for (FileModel fileModel : listDirectory) {
+                    addToContentProvider(resolver,
+                            fileModel.getFile().getAbsolutePath(),
+                            fileModel.getSizeDirectory());
                 }
-            });
-        }
-    }*/
+                adapter.replaceSizeOnTextView(fileModels.get(fileModels.size() - 1));
+            }
+        };
+        calculateSize = new FileViewFragment.AsyncRunnableCalculateSize(listener).execute(file);
+    }
 
-
-    public static class AsyncRunnableCalculateSize extends AsyncTask<File, Void, String> {
+    public static class AsyncRunnableCalculateSize extends AsyncTask<File, Void, List<FileModel>> {
         private FileViewFragment.OnCalculateSizeCompleted listener;
-        private ContentResolver contentResolver;
 
-        public AsyncRunnableCalculateSize(FileViewFragment.OnCalculateSizeCompleted listener,
-                                          ContentResolver contentResolver) {
+        AsyncRunnableCalculateSize(FileViewFragment.OnCalculateSizeCompleted listener) {
             this.listener = listener;
-            this.contentResolver = contentResolver;
         }
 
         @Override
-        protected String doInBackground(File... files) {
-            String size;
+        protected List<FileModel> doInBackground(File... files) {
+            List<FileModel> fileModels;
             if (!files[0].canRead()) {
                 return null;
             }
-            size = FileUtils.formatCalculatedSize(FileUtils.getDirectorySize(files[0], contentResolver));
-            return size;
+            fileModels = FileUtils.getDirectorySize(files[0]);
+            return fileModels;
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            listener.onCalculateSize(s);
-            super.onPostExecute(s);
+        protected void onPostExecute(List<FileModel> fileModels) {
+            listener.onCalculateSize(fileModels);
+            super.onPostExecute(fileModels);
         }
     }
 }
