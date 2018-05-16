@@ -9,4 +9,5 @@
     <string name="datefile">Date</string>
     <string name="namefile">NameFile</string>
     <string name="iconfile">iconFile</string>
+    <string name="size">...</string>
 </resources>

@@ -33,6 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:maxLines="3"
+            android:text="@string/size"
             android:textSize="12sp"
             tools:layout_editor_absoluteX="306dp"
             tools:layout_editor_absoluteY="33dp" />
