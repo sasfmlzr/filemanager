@@ -99,7 +99,9 @@ public class FileViewFragment extends Fragment {
 
     @Override
     public void onStop() {
-        runReadDatabase.cancel(true);
+        if (runReadDatabase != null) {
+            runReadDatabase.cancel(true);
+        }
         if (calculateSize != null) {
             calculateSize.cancel(true);
         }
