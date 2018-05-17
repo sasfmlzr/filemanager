@@ -67,9 +67,9 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
     }
 
     public void replaceSizeOnTextView(FileModel fileModel) {
-        for (FileModel currentFileModel : fileModels) {
+        for (int pos = 0; pos < fileModels.size(); pos++) {
+            FileModel currentFileModel = fileModels.get(pos);
             if (currentFileModel.getFile() == fileModel.getFile()) {
-                int pos = fileModels.indexOf(currentFileModel);
                 fileModels.set(pos, fileModel);
                 notifyItemChanged(pos);
                 return;
