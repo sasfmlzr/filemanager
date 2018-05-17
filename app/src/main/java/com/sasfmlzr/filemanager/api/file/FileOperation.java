@@ -17,41 +17,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class FileOperation {
-    private List<File> listFiles(File path, Context context) {
-        ArrayList<File> listFiles = new ArrayList<>();
-        if (!listFiles.isEmpty()) {
-            listFiles.clear();
-        }
-        if (path.exists() && path.canRead()) {
-            listFiles.addAll(Arrays.asList(path.listFiles()));
-        } else {
-            Toast.makeText(context, context.getString(R.string.cant_read_folder), Toast.LENGTH_SHORT).show();
-        }
-        return listFiles;
-    }
-
-    private List<File> fileModelLoad(File path, Context context) {
-        List<File> filesList = new ArrayList<>();
-        List<File> pathsList = new ArrayList<>();
-        List<File> listFiles;
-        FileOperation fileOperation = new FileOperation();
-        listFiles = fileOperation.listFiles(path, context);
-        for (File pathToFile : listFiles) {
-            File file = new File(pathToFile.getAbsolutePath());
-            if (file.canRead() && file.exists()) {
-                if (file.isFile()) {
-                    filesList.add(file);
-                } else {
-                    pathsList.add(file);
-                }
-            }
-        }
-        Collections.sort(pathsList, (lhs, rhs) -> lhs.getName().compareTo(rhs.getName()));
-        Collections.sort(filesList, (lhs, rhs) -> lhs.getName().compareTo(rhs.getName()));
-        List<File> fileModelList = new ArrayList<>(pathsList);
-        fileModelList.addAll(filesList);
-        return fileModelList;
-    }
 
     public static ArrayList<File> loadPath(File path, Context context) {
         if (!path.isDirectory()) {
@@ -88,5 +53,41 @@ public class FileOperation {
         }
         Collections.reverse(files);
         return files;
+    }
+
+    private List<File> listFiles(File path, Context context) {
+        ArrayList<File> listFiles = new ArrayList<>();
+        if (!listFiles.isEmpty()) {
+            listFiles.clear();
+        }
+        if (path.exists() && path.canRead()) {
+            listFiles.addAll(Arrays.asList(path.listFiles()));
+        } else {
+            Toast.makeText(context, context.getString(R.string.cant_read_folder), Toast.LENGTH_SHORT).show();
+        }
+        return listFiles;
+    }
+
+    private List<File> fileModelLoad(File path, Context context) {
+        List<File> filesList = new ArrayList<>();
+        List<File> pathsList = new ArrayList<>();
+        List<File> listFiles;
+        FileOperation fileOperation = new FileOperation();
+        listFiles = fileOperation.listFiles(path, context);
+        for (File pathToFile : listFiles) {
+            File file = new File(pathToFile.getAbsolutePath());
+            if (file.canRead() && file.exists()) {
+                if (file.isFile()) {
+                    filesList.add(file);
+                } else {
+                    pathsList.add(file);
+                }
+            }
+        }
+        Collections.sort(pathsList, (lhs, rhs) -> lhs.getName().compareTo(rhs.getName()));
+        Collections.sort(filesList, (lhs, rhs) -> lhs.getName().compareTo(rhs.getName()));
+        List<File> fileModelList = new ArrayList<>(pathsList);
+        fileModelList.addAll(filesList);
+        return fileModelList;
     }
 }

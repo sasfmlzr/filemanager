@@ -24,10 +24,6 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
     private PathItemClickListener pathListener;
     private HashMap<String, Long> cacheSizeDirectory;
 
-    public interface PathItemClickListener {
-        void pathClicked(File file);
-    }
-
     public FileExploreAdapter(List<FileModel> files,
                               PathItemClickListener listener,
                               HashMap<String, Long> cacheSizeDirectory) {
@@ -48,35 +44,34 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
                 DateFormat.SHORT, Locale.getDefault());
-        File fileModel = fileModels.get(position).getFile();
-        Long fileSize = fileModels.get(position).getSizeDirectory();
-        String sizeFile = FileUtils.formatCalculatedSize(fileSize);
-        if (fileSize != 0) {
-            holder.sizeItemView.setText(sizeFile);
+        final File currentFile = fileModels.get(position).getFile();
+        Long longSizeFile = fileModels.get(position).getSizeDirectory();
+        String strSizeFile = FileUtils.formatCalculatedSize(longSizeFile);
+        if (longSizeFile != 0) {
+            holder.sizeItemView.setText(strSizeFile);
         }
 
         if (!cacheSizeDirectory.isEmpty()) {
-            String kek = fileModel.getAbsolutePath();
-            if (cacheSizeDirectory.containsKey(kek)) {
-                Long lol = cacheSizeDirectory.get(kek);
-                sizeFile = FileUtils.formatCalculatedSize(lol);
-                holder.sizeItemView.setText(sizeFile);
+            String path = currentFile.getAbsolutePath();
+            if (cacheSizeDirectory.containsKey(path)) {
+                longSizeFile = cacheSizeDirectory.get(path);
+                strSizeFile = FileUtils.formatCalculatedSize(longSizeFile);
+                holder.sizeItemView.setText(strSizeFile);
             } else {
-                replaceTextViewSize(fileModel, holder);
+                addFileSizeText(currentFile, holder);
             }
         } else {
-            replaceTextViewSize(fileModel, holder);
+            addFileSizeText(currentFile, holder);
         }
 
-        holder.dateView.setText(df.format(fileModel.lastModified()));
-        holder.nameView.setText(fileModel.getName());
-        if (fileModel.isFile()) {
+        holder.dateView.setText(df.format(currentFile.lastModified()));
+        holder.nameView.setText(currentFile.getName());
+        if (currentFile.isFile()) {
             holder.imageView.setImageResource(R.drawable.file);
-        } else if (fileModel.isDirectory()) {
+        } else if (currentFile.isDirectory()) {
             holder.imageView.setImageResource(R.drawable.path);
         }
     }
-
 
     @Override
     public int getItemCount() {
@@ -86,6 +81,10 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
     @Override
     public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
+    }
+
+    public interface PathItemClickListener {
+        void pathClicked(File file);
     }
 
     public void replaceSizeOnTextView(FileModel fileModel) {
@@ -99,7 +98,7 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         }
     }
 
-    private void replaceTextViewSize(File fileModel, ViewHolder holder) {
+    private void addFileSizeText(File fileModel, ViewHolder holder) {
         if (fileModel.isFile()) {
             holder.sizeItemView.setText(FileUtils.formatCalculatedSize(fileModel.length()));
         }
