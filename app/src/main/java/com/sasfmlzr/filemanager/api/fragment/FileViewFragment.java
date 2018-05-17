@@ -145,6 +145,8 @@ public class FileViewFragment extends Fragment {
     private void setAdapter(File path, FileExploreAdapter.PathItemClickListener listener) {
         List<File> fileList = FileOperation.loadPath(path, view.getContext());
         List<FileModel> fileModels = new ArrayList<>();
+        ContentResolver resolver = view.getContext().getContentResolver();
+
         if (fileList != null) {
             for (File file : fileList) {
                 fileModels.add(new FileModel(file));
@@ -155,13 +157,12 @@ public class FileViewFragment extends Fragment {
             FileExploreAdapter fileExploreAdapter =
                     new FileExploreAdapter(fileModels, listener, cacheSizeDirectory);
             fileListView.setAdapter(fileExploreAdapter);
-            if (cacheSizeDirectory.isEmpty()) {
-                for (FileModel fileModel : fileModels) {
+            for (FileModel fileModel : fileModels) {
+                if (!cacheSizeDirectory.containsKey(fileModel.getFile().getAbsolutePath()))
                     calculateSizeDirectory(fileModel.getFile(), fileExploreAdapter);
-                }
             }
         };
-        runReadDatabase = new RunReadDatabase(view.getContext().getContentResolver(), readDatabaseListener).execute();
+        runReadDatabase = new RunReadDatabase(resolver, readDatabaseListener).execute();
 
         HashMap<String, Long> cacheSizeDirectory = new HashMap<>();
         RecyclerView.Adapter fileExploreAdapter =
