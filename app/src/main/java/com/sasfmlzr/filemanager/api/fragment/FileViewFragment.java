@@ -38,8 +38,8 @@ public class FileViewFragment extends Fragment {
     private File currentFile;
     private View view;
     private OnDirectorySelectedListener dirSelectedListener;
-    private AsyncTask runReadDatabase;
-    private AsyncTask calculateSize;
+    private AsyncTask readDatabaseTask;
+    private List<AsyncTask> calculateSize = new ArrayList<>();
     private DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (file) ->
             dirSelectedListener.onDirectorySelected(file);
     private FileExploreAdapter.PathItemClickListener pathListener = (file) -> {
@@ -98,18 +98,20 @@ public class FileViewFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        if (runReadDatabase != null) {
-            runReadDatabase.cancel(true);
+    public void onPause() {
+        if (readDatabaseTask != null) {
+            readDatabaseTask.cancel(true);
         }
-        if (calculateSize != null) {
-            calculateSize.cancel(true);
+        if (!calculateSize.isEmpty()) {
+            for (AsyncTask task : calculateSize) {
+                task.cancel(true);
+            }
         }
-        super.onStop();
+        super.onPause();
     }
 
     public interface OnCalculateSizeCompleted {
-        void onCalculateSize(List<FileModel> fileModels);
+        void onCalculateSize(FileModel fileModel);
     }
 
     public interface ReadDatabaseListener {
@@ -124,7 +126,6 @@ public class FileViewFragment extends Fragment {
         fileListView = view.findViewById(R.id.fileList);
         RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
         fileListView.setLayoutManager(layoutManagerPathView);
-        //fileListView.setNestedScrollingEnabled(false);
         setAdapter(currentFile, pathListener);
     }
 
@@ -160,11 +161,12 @@ public class FileViewFragment extends Fragment {
                     new FileExploreAdapter(fileModels, listener, cacheSizeDirectory);
             fileListView.setAdapter(fileExploreAdapter);
             for (FileModel fileModel : fileModels) {
-                if (!cacheSizeDirectory.containsKey(fileModel.getFile().getAbsolutePath()))
+                if (!cacheSizeDirectory.containsKey(fileModel.getFile().getAbsolutePath()) &&
+                        fileModel.getFile().isDirectory())
                     calculateSizeDirectory(fileModel.getFile(), fileExploreAdapter);
             }
         };
-        runReadDatabase = new ReadDatabaseTask(resolver, readDatabaseListener).execute();
+        readDatabaseTask = new ReadDatabaseTask(resolver, readDatabaseListener).execute();
 
         HashMap<String, Long> cacheSizeDirectory = new HashMap<>();
         RecyclerView.Adapter fileExploreAdapter =
@@ -174,18 +176,12 @@ public class FileViewFragment extends Fragment {
 
     private void calculateSizeDirectory(File file, FileExploreAdapter adapter) {
         ContentResolver resolver = Objects.requireNonNull(getContext()).getContentResolver();
-        FileViewFragment.OnCalculateSizeCompleted listener = (List<FileModel> fileModels) -> {
-            if (fileModels != null) {
-                List<FileModel> listDirectory = FileUtils.getOnlyDirectory(fileModels);
-                for (FileModel fileModel : listDirectory) {
-                    addToContentProvider(resolver,
-                            fileModel.getFile().getAbsolutePath(),
-                            fileModel.getSizeDirectory());
-                }
-                adapter.replaceSizeOnTextView(fileModels.get(fileModels.size() - 1));
-            }
+        FileViewFragment.OnCalculateSizeCompleted listener = (FileModel fileModel) -> {
+            adapter.replaceSizeOnTextView(fileModel);
         };
-        calculateSize = new CalculateSizeTask(listener).execute(file);
+        CalculateSizeTask task = new CalculateSizeTask(file, resolver, listener);
+        task.execute();
+        calculateSize.add(task);
     }
 
     public static class ReadDatabaseTask extends AsyncTask<Void, Void, HashMap<String, Long>> {
@@ -209,30 +205,44 @@ public class FileViewFragment extends Fragment {
         }
     }
 
-    public static class CalculateSizeTask extends AsyncTask<File, Void, List<FileModel>> {
+    public static class CalculateSizeTask extends AsyncTask<Void, Void, FileModel> {
         private FileViewFragment.OnCalculateSizeCompleted listener;
+        private ContentResolver resolver;
+        private File file;
 
-        CalculateSizeTask(FileViewFragment.OnCalculateSizeCompleted listener) {
+        CalculateSizeTask(File file,
+                          ContentResolver contentResolver,
+                          FileViewFragment.OnCalculateSizeCompleted listener) {
             this.listener = listener;
+            this.file = file;
+            resolver = contentResolver;
         }
 
         @Override
-        protected List<FileModel> doInBackground(File... files) {
+        protected FileModel doInBackground(Void... voids) {
             if (isCancelled()) {
                 return null;
             }
-            List<FileModel> fileModels;
-            if (!files[0].canRead()) {
-                return null;
-            }
-            fileModels = FileUtils.getDirectorySize(files[0]);
-            return fileModels;
+            FileUtils.AddToDatabaseCallback callback = new FileUtils.AddToDatabaseCallback() {
+                @Override
+                public void addToDatabase(FileModel fileModel) {
+                    addToContentProvider(resolver,
+                            fileModel.getFile().getAbsolutePath(),
+                            fileModel.getSizeDirectory());
+                }
+
+                @Override
+                public boolean isTaskCancelled() {
+                    return isCancelled();
+                }
+            };
+            return FileUtils.getDirectorySize(file, callback);
         }
 
         @Override
-        protected void onPostExecute(List<FileModel> fileModels) {
-            listener.onCalculateSize(fileModels);
-            super.onPostExecute(fileModels);
+        protected void onPostExecute(FileModel fileModel) {
+            listener.onCalculateSize(fileModel);
+            super.onPostExecute(fileModel);
         }
     }
 }
