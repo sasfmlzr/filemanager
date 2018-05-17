@@ -45,25 +45,8 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
         final DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
                 DateFormat.SHORT, Locale.getDefault());
         final File currentFile = fileModels.get(position).getFile();
-        Long longSizeFile = fileModels.get(position).getSizeDirectory();
-        String strSizeFile = FileUtils.formatCalculatedSize(longSizeFile);
-        if (longSizeFile != 0) {
-            holder.sizeItemView.setText(strSizeFile);
-        }
 
-        if (!cacheSizeDirectory.isEmpty()) {
-            String path = currentFile.getAbsolutePath();
-            if (cacheSizeDirectory.containsKey(path)) {
-                longSizeFile = cacheSizeDirectory.get(path);
-                strSizeFile = FileUtils.formatCalculatedSize(longSizeFile);
-                holder.sizeItemView.setText(strSizeFile);
-            } else {
-                addFileSizeText(currentFile, holder);
-            }
-        } else {
-            addFileSizeText(currentFile, holder);
-        }
-
+        setSizeDirectory(currentFile, position, holder);
         holder.dateView.setText(df.format(currentFile.lastModified()));
         holder.nameView.setText(currentFile.getName());
         addImageView(currentFile, holder);
@@ -91,6 +74,27 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
                 notifyItemChanged(pos);
                 return;
             }
+        }
+    }
+
+    private void setSizeDirectory(File file, int position, ViewHolder holder) {
+        Long longSizeFile = fileModels.get(position).getSizeDirectory();
+        String strSizeFile = FileUtils.formatCalculatedSize(longSizeFile);
+        if (longSizeFile != 0) {
+            holder.sizeItemView.setText(strSizeFile);
+        }
+
+        if (!cacheSizeDirectory.isEmpty()) {
+            String path = file.getAbsolutePath();
+            if (cacheSizeDirectory.containsKey(path)) {
+                longSizeFile = cacheSizeDirectory.get(path);
+                strSizeFile = FileUtils.formatCalculatedSize(longSizeFile);
+                holder.sizeItemView.setText(strSizeFile);
+            } else {
+                addFileSizeText(file, holder);
+            }
+        } else {
+            addFileSizeText(file, holder);
         }
     }
 
