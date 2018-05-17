@@ -37,9 +37,28 @@ public class FileViewFragment extends Fragment {
     private RecyclerView fileListView;
     private File currentFile;
     private View view;
-    private OnDirectorySelectedListener listener;
+    private OnDirectorySelectedListener dirSelectedListener;
     private AsyncTask runReadDatabase;
     private AsyncTask calculateSize;
+    private DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (file) ->
+            dirSelectedListener.onDirectorySelected(file);
+    private FileExploreAdapter.PathItemClickListener pathListener = (file) -> {
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                dirSelectedListener.onDirectorySelected(file);
+            } else if (file.isFile()) {
+                FileOperation.openFile(view.getContext(), file);
+            }
+        }
+    };
+
+    public static FileViewFragment newInstance(final File file) {
+        Bundle args = new Bundle();
+        FileViewFragment fragment = new FileViewFragment();
+        args.putString(BUNDLE_ARGS_CURRENT_PATH, file.getAbsolutePath());
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
@@ -65,7 +84,7 @@ public class FileViewFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (OnDirectorySelectedListener) getParentFragment();
+            dirSelectedListener = (OnDirectorySelectedListener) getParentFragment();
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " " +
                     R.string.exception_OnFragmentInteractionListener);
@@ -75,7 +94,7 @@ public class FileViewFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        listener = null;
+        dirSelectedListener = null;
     }
 
     @Override
@@ -87,30 +106,41 @@ public class FileViewFragment extends Fragment {
         super.onStop();
     }
 
+    public interface OnCalculateSizeCompleted {
+        void onCalculateSize(List<FileModel> fileModels);
+    }
+
+    public interface ReadDatabaseListener {
+        void listenReadDatabase(HashMap<String, Long> cacheSizeDirectory);
+    }
+
     public interface OnDirectorySelectedListener {
         void onDirectorySelected(File currentFile);
     }
 
-    private DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (file) ->
-            listener.onDirectorySelected(file);
-
-    public static FileViewFragment newInstance(final File file) {
-        Bundle args = new Bundle();
-        FileViewFragment fragment = new FileViewFragment();
-        args.putString(BUNDLE_ARGS_CURRENT_PATH, file.getAbsolutePath());
-        fragment.setArguments(args);
-        return fragment;
+    private void loadListDirectory() {
+        fileListView = view.findViewById(R.id.fileList);
+        RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
+        fileListView.setLayoutManager(layoutManagerPathView);
+        fileListView.setNestedScrollingEnabled(false);
+        setAdapter(currentFile, pathListener);
     }
 
-    private FileExploreAdapter.PathItemClickListener pathListener = (file) -> {
-        if (file.exists()) {
-            if (file.isDirectory()) {
-                listener.onDirectorySelected(file);
-            } else if (file.isFile()) {
-                FileOperation.openFile(view.getContext(), file);
-            }
-        }
-    };
+    private void loadDirectoryNavigation() {
+        RecyclerView recyclerView = view.findViewById(R.id.navigation_recycler_view);
+        RecyclerView.LayoutManager layoutManagerRecView = new LinearLayoutManager(view.getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManagerRecView);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration
+                (recyclerView.getContext(), LinearLayoutManager.HORIZONTAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        List<File> files = getParentsFile(currentFile);
+        RecyclerView.Adapter adapter = new DirectoryNavigationAdapter(files, navigationListener);
+        recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
+        recyclerView.setAdapter(adapter);
+    }
 
     private void setAdapter(File path, FileExploreAdapter.PathItemClickListener listener) {
         List<File> fileList = FileOperation.loadPath(path, view.getContext());
@@ -139,38 +169,21 @@ public class FileViewFragment extends Fragment {
         fileListView.setAdapter(fileExploreAdapter);
     }
 
-    private void loadListDirectory() {
-        fileListView = view.findViewById(R.id.fileList);
-        RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
-        fileListView.setLayoutManager(layoutManagerPathView);
-        fileListView.setNestedScrollingEnabled(false);
-        setAdapter(currentFile, pathListener);
+    private void calculateSizeDirectory(File file, FileExploreAdapter adapter) {
+        ContentResolver resolver = Objects.requireNonNull(getContext()).getContentResolver();
+        FileViewFragment.OnCalculateSizeCompleted listener = (List<FileModel> fileModels) -> {
+            if (fileModels != null) {
+                List<FileModel> listDirectory = FileUtils.getOnlyDirectory(fileModels);
+                for (FileModel fileModel : listDirectory) {
+                    addToContentProvider(resolver,
+                            fileModel.getFile().getAbsolutePath(),
+                            fileModel.getSizeDirectory());
+                }
+                adapter.replaceSizeOnTextView(fileModels.get(fileModels.size() - 1));
+            }
+        };
+        calculateSize = new FileViewFragment.AsyncRunnableCalculateSize(listener).execute(file);
     }
-
-    private void loadDirectoryNavigation() {
-        RecyclerView recyclerView = view.findViewById(R.id.navigation_recycler_view);
-        RecyclerView.LayoutManager layoutManagerRecView = new LinearLayoutManager(view.getContext(),
-                LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(layoutManagerRecView);
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration
-                (recyclerView.getContext(), LinearLayoutManager.HORIZONTAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-
-        List<File> files = getParentsFile(currentFile);
-        RecyclerView.Adapter adapter = new DirectoryNavigationAdapter(files, navigationListener);
-        recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
-        recyclerView.setAdapter(adapter);
-    }
-
-    public interface OnCalculateSizeCompleted {
-        void onCalculateSize(List<FileModel> fileModels);
-    }
-
-    public interface ReadDatabaseListener {
-        void listenReadDatabase(HashMap<String, Long> cacheSizeDirectory);
-    }
-
 
     public static class RunReadDatabase extends AsyncTask<Void, Void, HashMap<String, Long>> {
         ContentResolver contentResolver;
@@ -191,22 +204,6 @@ public class FileViewFragment extends Fragment {
             listener.listenReadDatabase(hashMap);
             super.onPostExecute(hashMap);
         }
-    }
-
-    private void calculateSizeDirectory(File file, FileExploreAdapter adapter) {
-        ContentResolver resolver = Objects.requireNonNull(getContext()).getContentResolver();
-        FileViewFragment.OnCalculateSizeCompleted listener = (List<FileModel> fileModels) -> {
-            if (fileModels != null) {
-                List<FileModel> listDirectory = FileUtils.getOnlyDirectory(fileModels);
-                for (FileModel fileModel : listDirectory) {
-                    addToContentProvider(resolver,
-                            fileModel.getFile().getAbsolutePath(),
-                            fileModel.getSizeDirectory());
-                }
-                adapter.replaceSizeOnTextView(fileModels.get(fileModels.size() - 1));
-            }
-        };
-        calculateSize = new FileViewFragment.AsyncRunnableCalculateSize(listener).execute(file);
     }
 
     public static class AsyncRunnableCalculateSize extends AsyncTask<File, Void, List<FileModel>> {
