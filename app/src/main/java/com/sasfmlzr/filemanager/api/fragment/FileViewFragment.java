@@ -164,7 +164,7 @@ public class FileViewFragment extends Fragment {
                     calculateSizeDirectory(fileModel.getFile(), fileExploreAdapter);
             }
         };
-        runReadDatabase = new RunReadDatabase(resolver, readDatabaseListener).execute();
+        runReadDatabase = new ReadDatabaseTask(resolver, readDatabaseListener).execute();
 
         HashMap<String, Long> cacheSizeDirectory = new HashMap<>();
         RecyclerView.Adapter fileExploreAdapter =
@@ -185,14 +185,14 @@ public class FileViewFragment extends Fragment {
                 adapter.replaceSizeOnTextView(fileModels.get(fileModels.size() - 1));
             }
         };
-        calculateSize = new FileViewFragment.AsyncRunnableCalculateSize(listener).execute(file);
+        calculateSize = new CalculateSizeTask(listener).execute(file);
     }
 
-    public static class RunReadDatabase extends AsyncTask<Void, Void, HashMap<String, Long>> {
+    public static class ReadDatabaseTask extends AsyncTask<Void, Void, HashMap<String, Long>> {
         ContentResolver contentResolver;
         ReadDatabaseListener listener;
 
-        RunReadDatabase(ContentResolver contentResolver, ReadDatabaseListener listener) {
+        ReadDatabaseTask(ContentResolver contentResolver, ReadDatabaseListener listener) {
             this.contentResolver = contentResolver;
             this.listener = listener;
         }
@@ -209,10 +209,10 @@ public class FileViewFragment extends Fragment {
         }
     }
 
-    public static class AsyncRunnableCalculateSize extends AsyncTask<File, Void, List<FileModel>> {
+    public static class CalculateSizeTask extends AsyncTask<File, Void, List<FileModel>> {
         private FileViewFragment.OnCalculateSizeCompleted listener;
 
-        AsyncRunnableCalculateSize(FileViewFragment.OnCalculateSizeCompleted listener) {
+        CalculateSizeTask(FileViewFragment.OnCalculateSizeCompleted listener) {
             this.listener = listener;
         }
 
