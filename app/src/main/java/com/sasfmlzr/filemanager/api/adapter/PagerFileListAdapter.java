@@ -7,7 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.sasfmlzr.filemanager.api.fragment.EmptyPagerFragment;
+import com.sasfmlzr.filemanager.api.fragment.ContainerPagerFragment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class PagerFileListAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return EmptyPagerFragment.newInstance(fileList.get(position));
+        return ContainerPagerFragment.newInstance(fileList.get(position));
     }
 
     @Override

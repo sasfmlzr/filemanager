@@ -13,15 +13,15 @@ import com.sasfmlzr.filemanager.R;
 import java.io.File;
 import java.util.Objects;
 
-public class EmptyPagerFragment extends Fragment implements FileViewFragment.OnDirectorySelectedListener {
+public class ContainerPagerFragment extends Fragment implements FileViewFragment.OnDirectorySelectedListener {
     protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
 
     private File currentFile;
     private boolean firstFragment = true;
 
-    public static EmptyPagerFragment newInstance(final File file) {
+    public static ContainerPagerFragment newInstance(final File file) {
         Bundle args = new Bundle();
-        EmptyPagerFragment fragment = new EmptyPagerFragment();
+        ContainerPagerFragment fragment = new ContainerPagerFragment();
         args.putString(BUNDLE_ARGS_CURRENT_PATH, file.getAbsolutePath());
         fragment.setArguments(args);
         return fragment;
