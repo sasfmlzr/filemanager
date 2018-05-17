@@ -54,7 +54,6 @@ public class FileUtils {
                 // ignore exception when asking for symlink
             }
         }
-        // CacheProviderOperation.addToContentProvider(contentResolver, directory.getAbsolutePath(), formatCalculatedSize(size));
         fileModels.add(new FileModel(directory, size));
         return fileModels;
     }
@@ -83,7 +82,6 @@ public class FileUtils {
 
     private static long sizeOf(File file) {
         if (file.isDirectory()) {
-            //CacheProviderOperation.addToContentProvider(contentResolver, file.getAbsolutePath(), formatCalculatedSize(directorySize));
             List<FileModel> list = getDirectorySize(file);
             assert list != null;
             return list.get(list.size() - 1).getSizeDirectory();

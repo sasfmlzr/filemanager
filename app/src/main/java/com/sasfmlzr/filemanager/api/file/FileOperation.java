@@ -84,7 +84,8 @@ public class FileOperation {
                 }
             }
         }
-        Collections.sort(pathsList, (lhs, rhs) -> lhs.getName().compareTo(rhs.getName()));
+        Collections.sort(pathsList, (lhs, rhs) ->
+                lhs.getName().toUpperCase().compareTo(rhs.getName().toUpperCase()));
         Collections.sort(filesList, (lhs, rhs) -> lhs.getName().compareTo(rhs.getName()));
         List<File> fileModelList = new ArrayList<>(pathsList);
         fileModelList.addAll(filesList);

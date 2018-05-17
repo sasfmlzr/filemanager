@@ -124,7 +124,7 @@ public class FileViewFragment extends Fragment {
         fileListView = view.findViewById(R.id.fileList);
         RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
         fileListView.setLayoutManager(layoutManagerPathView);
-        fileListView.setNestedScrollingEnabled(false);
+        //fileListView.setNestedScrollingEnabled(false);
         setAdapter(currentFile, pathListener);
     }
 
@@ -218,6 +218,9 @@ public class FileViewFragment extends Fragment {
 
         @Override
         protected List<FileModel> doInBackground(File... files) {
+            if (isCancelled()) {
+                return null;
+            }
             List<FileModel> fileModels;
             if (!files[0].canRead()) {
                 return null;
