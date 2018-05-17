@@ -14,19 +14,11 @@ import com.sasfmlzr.filemanager.api.other.data.AppDatabase;
 import com.sasfmlzr.filemanager.api.other.data.DataCache;
 
 public class CacheSizeProvider extends ContentProvider {
-
-    private static final UriMatcher MATCHER = buildUriMatcher();
     public static final int CACHEDIRECTORY = 100;
     public static final int CACHEDIRECTORY_ID = 101;
+    private static final UriMatcher MATCHER = buildUriMatcher();
 
     private AppDatabase mOpenHelper;
-
-    private static UriMatcher buildUriMatcher() {
-        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        matcher.addURI(DataCache.AUTHORITY, DataCache.TABLE_NAME, CACHEDIRECTORY);
-        matcher.addURI(DataCache.AUTHORITY, DataCache.TABLE_NAME + "/#", CACHEDIRECTORY_ID);
-        return matcher;
-    }
 
     @Override
     public boolean onCreate() {
@@ -129,5 +121,12 @@ public class CacheSizeProvider extends ContentProvider {
             }
         }
         return db.update(DataCache.TABLE_NAME, values, selectionCriteria, selectionArgs);
+    }
+
+    private static UriMatcher buildUriMatcher() {
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        matcher.addURI(DataCache.AUTHORITY, DataCache.TABLE_NAME, CACHEDIRECTORY);
+        matcher.addURI(DataCache.AUTHORITY, DataCache.TABLE_NAME + "/#", CACHEDIRECTORY_ID);
+        return matcher;
     }
 }

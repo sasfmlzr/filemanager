@@ -4,12 +4,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class AppDatabase extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "cacheSizeDirectory.db";
-    public static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "cacheSizeDirectory.db";
+    private static final int DATABASE_VERSION = 1;
 
     private static AppDatabase instance = null;
 
-    public AppDatabase(Context context) {
+    private AppDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

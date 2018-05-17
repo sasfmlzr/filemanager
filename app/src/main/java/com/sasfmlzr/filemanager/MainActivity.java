@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-
     protected static final File DEFAULT_PATH = Environment
             .getExternalStorageDirectory();
     private static final int PERMISSION_CODE_READ_EXTERNAL_STORAGE = 0;
+
     private ViewPager viewPager;
 
     @Override

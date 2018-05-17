@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PagerFileListAdapter extends FragmentPagerAdapter {
-
     private static final String KEY_FRAGMENT = "fragment";
+
     private List<File> fileList = new ArrayList<>();
     private Context context;
 

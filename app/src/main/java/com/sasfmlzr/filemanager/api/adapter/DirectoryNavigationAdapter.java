@@ -13,12 +13,9 @@ import java.io.File;
 import java.util.List;
 
 public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNavigationAdapter.ViewHolder> {
+
     private List<File> dataset;
     private NavigationItemClickListener navListener;
-
-    public interface NavigationItemClickListener {
-        void navItemClicked(File file);
-    }
 
     public DirectoryNavigationAdapter(List<File> directory,
                                       NavigationItemClickListener navigationListener) {
@@ -42,6 +39,10 @@ public class DirectoryNavigationAdapter extends RecyclerView.Adapter<DirectoryNa
     @Override
     public int getItemCount() {
         return dataset.size();
+    }
+
+    public interface NavigationItemClickListener {
+        void navItemClicked(File file);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

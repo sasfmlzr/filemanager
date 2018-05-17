@@ -16,7 +16,6 @@ public class FileUtils {
     private static final BigInteger TB_BI = KB_BI.multiply(GB_BI);
 
     public static String formatCalculatedSize(Long ls) {
-
         BigInteger size = BigInteger.valueOf(ls);
         String displaySize;
 

@@ -66,11 +66,7 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
 
         holder.dateView.setText(df.format(currentFile.lastModified()));
         holder.nameView.setText(currentFile.getName());
-        if (currentFile.isFile()) {
-            holder.imageView.setImageResource(R.drawable.file);
-        } else if (currentFile.isDirectory()) {
-            holder.imageView.setImageResource(R.drawable.path);
-        }
+        addImageView(currentFile, holder);
     }
 
     @Override
@@ -95,6 +91,14 @@ public class FileExploreAdapter extends RecyclerView.Adapter<FileExploreAdapter.
                 notifyItemChanged(pos);
                 return;
             }
+        }
+    }
+
+    private void addImageView(File file, ViewHolder holder) {
+        if (file.isFile()) {
+            holder.imageView.setImageResource(R.drawable.file);
+        } else {
+            holder.imageView.setImageResource(R.drawable.path);
         }
     }
 
