@@ -15,6 +15,7 @@ import java.util.Objects;
 
 public class EmptyPagerFragment extends Fragment implements FileViewFragment.OnDirectorySelectedListener {
     protected static final String BUNDLE_ARGS_CURRENT_PATH = "currentPath";
+
     private File currentFile;
     private boolean firstFragment = true;
 
@@ -24,19 +25,6 @@ public class EmptyPagerFragment extends Fragment implements FileViewFragment.OnD
         args.putString(BUNDLE_ARGS_CURRENT_PATH, file.getAbsolutePath());
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public void replaceChildFragment(File currentFile) {
-        this.currentFile = currentFile;
-        Fragment childFragment = FileViewFragment.newInstance(currentFile);
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.child_fragment_container, childFragment);
-        if (!firstFragment) {
-            transaction.addToBackStack(null);
-        } else {
-            firstFragment = false;
-        }
-        transaction.commit();
     }
 
     @Override
@@ -63,5 +51,18 @@ public class EmptyPagerFragment extends Fragment implements FileViewFragment.OnD
     @Override
     public void onDirectorySelected(File currentFile) {
         replaceChildFragment(currentFile);
+    }
+
+    public void replaceChildFragment(File currentFile) {
+        this.currentFile = currentFile;
+        Fragment childFragment = FileViewFragment.newInstance(currentFile);
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(R.id.child_fragment_container, childFragment);
+        if (!firstFragment) {
+            transaction.addToBackStack(null);
+        } else {
+            firstFragment = false;
+        }
+        transaction.commit();
     }
 }
