@@ -52,6 +52,8 @@ public class FileViewFragment extends Fragment {
         }
     };
 
+    private ContainerPagerFragment.OnVisible onVisibleListener;
+
     public static FileViewFragment newInstance(final File file) {
         Bundle args = new Bundle();
         FileViewFragment fragment = new FileViewFragment();
@@ -75,6 +77,7 @@ public class FileViewFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_file_view, container, false);
         setRetainInstance(true);
+
         loadListDirectory();
         loadDirectoryNavigation();
         return view;
@@ -99,6 +102,16 @@ public class FileViewFragment extends Fragment {
 
     @Override
     public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        interruptTasks();
+        super.onStop();
+    }
+
+    private void interruptTasks(){
         if (readDatabaseTask != null) {
             readDatabaseTask.cancel(true);
         }
@@ -107,7 +120,6 @@ public class FileViewFragment extends Fragment {
                 task.cancel(true);
             }
         }
-        super.onPause();
     }
 
     public interface OnCalculateSizeCompleted {
@@ -122,6 +134,12 @@ public class FileViewFragment extends Fragment {
         void onDirectorySelected(File currentFile);
     }
 
+    public ContainerPagerFragment.OnVisible setVisibleListener (){
+        if (onVisibleListener!=null){
+            return onVisibleListener;
+        }
+        return null;
+    }
     private void loadListDirectory() {
         fileListView = view.findViewById(R.id.fileList);
         RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
@@ -167,7 +185,11 @@ public class FileViewFragment extends Fragment {
             }
         };
         readDatabaseTask = new ReadDatabaseTask(resolver, readDatabaseListener).execute();
-
+        onVisibleListener = visible -> {
+            if (!visible){
+                interruptTasks();
+            }
+        };
         HashMap<String, Long> cacheSizeDirectory = new HashMap<>();
         RecyclerView.Adapter fileExploreAdapter =
                 new FileExploreAdapter(fileModels, listener, cacheSizeDirectory);
