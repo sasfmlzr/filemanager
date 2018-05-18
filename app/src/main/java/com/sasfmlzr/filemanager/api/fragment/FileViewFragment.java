@@ -111,7 +111,7 @@ public class FileViewFragment extends Fragment {
         super.onStop();
     }
 
-    private void interruptTasks(){
+    private void interruptTasks() {
         if (readDatabaseTask != null) {
             readDatabaseTask.cancel(true);
         }
@@ -134,12 +134,13 @@ public class FileViewFragment extends Fragment {
         void onDirectorySelected(File currentFile);
     }
 
-    public ContainerPagerFragment.OnVisible setVisibleListener (){
-        if (onVisibleListener!=null){
+    public ContainerPagerFragment.OnVisible setVisibleListener() {
+        if (onVisibleListener != null) {
             return onVisibleListener;
         }
         return null;
     }
+
     private void loadListDirectory() {
         fileListView = view.findViewById(R.id.fileList);
         RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
@@ -186,7 +187,7 @@ public class FileViewFragment extends Fragment {
         };
         readDatabaseTask = new ReadDatabaseTask(resolver, readDatabaseListener).execute();
         onVisibleListener = visible -> {
-            if (!visible){
+            if (!visible) {
                 interruptTasks();
             }
         };

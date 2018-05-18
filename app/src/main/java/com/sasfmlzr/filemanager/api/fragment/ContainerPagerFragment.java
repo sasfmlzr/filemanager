@@ -20,6 +20,7 @@ public class ContainerPagerFragment extends Fragment implements FileViewFragment
     private boolean firstFragment = true;
     FileViewFragment childFragment;
     private OnVisible visibleListener;
+
     public static ContainerPagerFragment newInstance(final File file) {
         Bundle args = new Bundle();
         ContainerPagerFragment fragment = new ContainerPagerFragment();
@@ -56,16 +57,16 @@ public class ContainerPagerFragment extends Fragment implements FileViewFragment
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
-        if (isVisible()){
-            if (childFragment!=null) {
-                visibleListener=childFragment.setVisibleListener();
+        if (isVisible()) {
+            if (childFragment != null) {
+                visibleListener = childFragment.setVisibleListener();
                 visibleListener.isVisible(isVisibleToUser);
             }
         }
         super.setUserVisibleHint(isVisibleToUser);
     }
 
-    public interface OnVisible{
+    public interface OnVisible {
         void isVisible(Boolean visible);
     }
 
