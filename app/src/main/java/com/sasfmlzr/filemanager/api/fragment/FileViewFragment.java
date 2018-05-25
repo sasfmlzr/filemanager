@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,8 @@ public class FileViewFragment extends Fragment {
     private OnDirectorySelectedListener dirSelectedListener;
     private AsyncTask readDatabaseTask;
     private List<AsyncTask> calculateSize = new ArrayList<>();
+    private Visible visible = new Visible();
+    private List<FileModel> fileModels = new ArrayList<>();
     private DirectoryNavigationAdapter.NavigationItemClickListener navigationListener = (file) ->
             dirSelectedListener.onDirectorySelected(file);
     private FileExploreAdapter.PathItemClickListener pathListener = (file) -> {
@@ -51,8 +54,6 @@ public class FileViewFragment extends Fragment {
             }
         }
     };
-
-    private ContainerPagerFragment.OnVisible onVisibleListener;
 
     public static FileViewFragment newInstance(final File file) {
         Bundle args = new Bundle();
@@ -111,15 +112,8 @@ public class FileViewFragment extends Fragment {
         super.onStop();
     }
 
-    private void interruptTasks() {
-        if (readDatabaseTask != null) {
-            readDatabaseTask.cancel(true);
-        }
-        if (!calculateSize.isEmpty()) {
-            for (AsyncTask task : calculateSize) {
-                task.cancel(true);
-            }
-        }
+    public void isVisibleFragment(Boolean visibleFragment) {
+        visible.isVisible(visibleFragment);
     }
 
     public interface OnCalculateSizeCompleted {
@@ -134,18 +128,11 @@ public class FileViewFragment extends Fragment {
         void onDirectorySelected(File currentFile);
     }
 
-    public ContainerPagerFragment.OnVisible setVisibleListener() {
-        if (onVisibleListener != null) {
-            return onVisibleListener;
-        }
-        return null;
-    }
-
     private void loadListDirectory() {
         fileListView = view.findViewById(R.id.fileList);
         RecyclerView.LayoutManager layoutManagerPathView = new LinearLayoutManager(view.getContext());
         fileListView.setLayoutManager(layoutManagerPathView);
-        setAdapter(currentFile, pathListener);
+        setAdapter(currentFile);
     }
 
     private void loadDirectoryNavigation() {
@@ -164,11 +151,11 @@ public class FileViewFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
-    private void setAdapter(File path, FileExploreAdapter.PathItemClickListener listener) {
+    private void setAdapter(File path) {
         List<File> fileList = FileOperation.loadPath(path, view.getContext());
-        List<FileModel> fileModels = new ArrayList<>();
-        ContentResolver resolver = view.getContext().getContentResolver();
 
+        ContentResolver resolver = view.getContext().getContentResolver();
+        fileModels.clear();
         if (fileList != null) {
             for (File file : fileList) {
                 fileModels.add(new FileModel(file));
@@ -176,24 +163,13 @@ public class FileViewFragment extends Fragment {
         }
 
         ReadDatabaseListener readDatabaseListener = cacheSizeDirectory -> {
-            FileExploreAdapter fileExploreAdapter =
-                    new FileExploreAdapter(fileModels, listener, cacheSizeDirectory);
-            fileListView.setAdapter(fileExploreAdapter);
-            for (FileModel fileModel : fileModels) {
-                if (!cacheSizeDirectory.containsKey(fileModel.getFile().getAbsolutePath()) &&
-                        fileModel.getFile().isDirectory())
-                    calculateSizeDirectory(fileModel.getFile(), fileExploreAdapter);
-            }
+            replaceAdapterAfterDBCalc(cacheSizeDirectory);
         };
         readDatabaseTask = new ReadDatabaseTask(resolver, readDatabaseListener).execute();
-        onVisibleListener = visible -> {
-            if (!visible) {
-                interruptTasks();
-            }
-        };
+        Log.d("asasas", "run");
         HashMap<String, Long> cacheSizeDirectory = new HashMap<>();
         RecyclerView.Adapter fileExploreAdapter =
-                new FileExploreAdapter(fileModels, listener, cacheSizeDirectory);
+                new FileExploreAdapter(fileModels, pathListener, cacheSizeDirectory);
         fileListView.setAdapter(fileExploreAdapter);
     }
 
@@ -205,6 +181,45 @@ public class FileViewFragment extends Fragment {
         CalculateSizeTask task = new CalculateSizeTask(file, resolver, listener);
         task.execute();
         calculateSize.add(task);
+    }
+
+    private void replaceAdapterAfterDBCalc(HashMap<String, Long> cacheSizeDirectory) {
+        FileExploreAdapter fileExploreAdapter =
+                new FileExploreAdapter(fileModels, pathListener, cacheSizeDirectory);
+        fileListView.setAdapter(fileExploreAdapter);
+        for (FileModel fileModel : fileModels) {
+            if (!cacheSizeDirectory.containsKey(fileModel.getFile().getAbsolutePath()) &&
+                    fileModel.getFile().isDirectory()) {
+                calculateSizeDirectory(fileModel.getFile(), fileExploreAdapter);
+            }
+        }
+    }
+
+    private void runTasks() {
+        if (readDatabaseTask != null) {
+            if (readDatabaseTask.getStatus().equals(AsyncTask.Status.PENDING)) {
+                ((ReadDatabaseTask) readDatabaseTask).execute();
+            }
+
+        }
+        if (!calculateSize.isEmpty()) {
+            for (AsyncTask task : calculateSize) {
+                if (task.getStatus().equals(AsyncTask.Status.PENDING)) {
+                    ((CalculateSizeTask) task).execute();
+                }
+            }
+        }
+    }
+
+    private void interruptTasks() {
+        if (readDatabaseTask != null) {
+            readDatabaseTask.cancel(true);
+        }
+        if (!calculateSize.isEmpty()) {
+            for (AsyncTask task : calculateSize) {
+                task.cancel(true);
+            }
+        }
     }
 
     public static class ReadDatabaseTask extends AsyncTask<Void, Void, HashMap<String, Long>> {
@@ -268,4 +283,16 @@ public class FileViewFragment extends Fragment {
             super.onPostExecute(fileModel);
         }
     }
+
+    private class Visible implements ContainerPagerFragment.OnVisible {
+        @Override
+        public void isVisible(Boolean visible) {
+            if (visible) {
+                runTasks();
+            } else {
+                interruptTasks();
+            }
+        }
+    }
+
 }
