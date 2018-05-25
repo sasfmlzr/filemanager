@@ -102,11 +102,6 @@ public class FileViewFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onStop() {
         interruptTasks();
         super.onStop();
@@ -294,5 +289,4 @@ public class FileViewFragment extends Fragment {
             }
         }
     }
-
 }

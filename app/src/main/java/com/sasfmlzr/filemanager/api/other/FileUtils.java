@@ -38,7 +38,6 @@ public class FileUtils {
         return displaySize;
     }
 
-
     public static FileModel getDirectorySize(File directory, AddToDatabaseCallback callback) {
         final File[] files = directory.listFiles();
         long size = 0;
